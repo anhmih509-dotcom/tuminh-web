@@ -1,0 +1,9 @@
+# Netlify Configuration cho tuminh.com.vn
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build]
+  publish = "."

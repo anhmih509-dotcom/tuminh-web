@@ -1,0 +1,67 @@
+backend:
+  name: github
+  repo: YOUR_GITHUB_USERNAME/YOUR_REPO_NAME   # ← Thay bằng username/repo của bạn
+  branch: main
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
+
+# Netlify Identity - dùng để đăng nhập
+# Bật trong Netlify Dashboard > Identity
+
+media_folder: "images/posts"       # Ảnh upload lưu vào đây
+public_folder: "/images/posts"     # Đường dẫn public của ảnh
+
+# Locale tiếng Việt
+locale: "vi"
+
+collections:
+  - name: "posts"
+    label: "Bài viết Tri Thức"
+    label_singular: "Bài viết"
+    folder: "posts"
+    create: true
+    slug: "{{slug}}"
+    identifier_field: slug
+    fields:
+      - label: "Đường dẫn URL (slug)"
+        name: "slug"
+        widget: "string"
+        hint: "Ví dụ: ky-thuat-duc-nhom-ap-luc — chỉ dùng chữ thường, không dấu, dùng dấu gạch ngang"
+        pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Chỉ dùng chữ thường, số và dấu gạch ngang"]
+
+      - label: "Tiêu đề bài viết"
+        name: "title"
+        widget: "string"
+
+      - label: "Danh mục (Tag)"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "Kinh nghiệm Đúc", value: "Kinh nghiệm Đúc" }
+          - { label: "Công nghệ Luyện kim", value: "Công nghệ Luyện kim" }
+          - { label: "Thiết bị & Đo lường", value: "Thiết bị & Đo lường" }
+          - { label: "Tin tức", value: "Tin tức" }
+
+      - label: "Tóm tắt (hiển thị ở trang danh sách)"
+        name: "summary"
+        widget: "text"
+
+      - label: "Ảnh thumbnail (ảnh bìa)"
+        name: "thumbnail"
+        widget: "image"
+        hint: "Ảnh đại diện hiển thị trong danh sách bài viết"
+
+      - label: "Alt text của ảnh thumbnail"
+        name: "thumbnail_alt"
+        widget: "string"
+        default: ""
+
+      - label: "Thời gian đọc"
+        name: "read_time"
+        widget: "string"
+        default: "5 phút đọc"
+
+      - label: "Nội dung bài viết"
+        name: "body"
+        widget: "markdown"
+        hint: "Hỗ trợ Markdown: **in đậm**, *in nghiêng*, ## Tiêu đề, - Danh sách, v.v."
