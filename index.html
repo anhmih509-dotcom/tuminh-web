@@ -944,18 +944,18 @@
             const others = products.filter(p => !p.featured);
 
             function productCard(p) {
-                return \`<div class="bg-tm-dark border border-tm-border hover:border-blue-500 transition group flex flex-col h-full">
+                return `<div class="bg-tm-dark border border-tm-border hover:border-blue-500 transition group flex flex-col h-full">
                     <div class="bg-white p-4 h-[200px] flex justify-center items-center overflow-hidden border-b border-tm-border">
-                        <img src="\${p.thumbnail}" alt="\${p.thumbnail_alt}" class="max-h-full object-contain group-hover:scale-105 transition-transform duration-500 text-gray-500 text-xs">
+                        <img src="${p.thumbnail}" alt="${p.thumbnail_alt}" class="max-h-full object-contain group-hover:scale-105 transition-transform duration-500 text-gray-500 text-xs">
                     </div>
                     <div class="p-6 flex flex-col flex-grow">
-                        <h3 class="text-lg font-bold text-white mb-2 leading-snug">\${p.title}</h3>
-                        <p class="text-xs text-gray-400 mb-6 flex-grow">\${p.short_description}</p>
-                        <button onclick="navigateToProduct('\${p.slug}')" class="w-full text-center border border-white text-white px-4 py-2 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition">
+                        <h3 class="text-lg font-bold text-white mb-2 leading-snug">${p.title}</h3>
+                        <p class="text-xs text-gray-400 mb-6 flex-grow">${p.short_description}</p>
+                        <button onclick="navigateToProduct('${p.slug}')" class="w-full text-center border border-white text-white px-4 py-2 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition">
                             Xem thêm chi tiết
                         </button>
                     </div>
-                </div>\`;
+                </div>`;
             }
 
             // Render vào các grid section
@@ -975,12 +975,12 @@
                 });
                 let html = '';
                 for (const [cat, items] of Object.entries(cats)) {
-                    html += \`<div class="mb-16">
-                        <h3 class="text-xl font-bold text-white mb-6 border-b border-tm-border pb-3">\${cat}</h3>
+                    html += `<div class="mb-16">
+                        <h3 class="text-xl font-bold text-white mb-6 border-b border-tm-border pb-3">${cat}</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            \${items.map(productCard).join('')}
+                            ${items.map(productCard).join('')}
                         </div>
-                    </div>\`;
+                    </div>`;
                 }
                 allGrid.innerHTML = html;
             }
