@@ -1861,7 +1861,7 @@
             if (loading) loading.remove();
 
             const cards = posts.map(function(post) {
-                return '<div class="bg-tm-black border border-tm-border hover:border-blue-500 transition-colors group flex flex-col cursor-pointer" onclick="navigateToArticle('' + post.slug + '')">' +
+                return '<div class="bg-tm-black border border-tm-border hover:border-blue-500 transition-colors group flex flex-col cursor-pointer" onclick="navigateToArticle(\'' + post.slug + '\')">' +
                     '<div class="h-60 overflow-hidden relative">' +
                         '<div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10"></div>' +
                         '<img src="' + post.thumbnail + '" alt="' + post.thumbnail_alt + '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 text-gray-500 text-xs">' +
