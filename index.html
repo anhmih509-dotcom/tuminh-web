@@ -1742,9 +1742,9 @@
             }
         });
 
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const closeMobileMenuBtn = document.getElementById('close-mobile-menu');
-        const mobileMenu = document.getElementById('mobile-menu');
+        var mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        var closeMobileMenuBtn = document.getElementById('close-mobile-menu');
+        var mobileMenu = document.getElementById('mobile-menu');
 
         function toggleMobileMenu() {
             if(mobileMenu) mobileMenu.classList.toggle('hidden');
@@ -1764,7 +1764,7 @@
             document.head.appendChild(s);
         })();
 
-        const postsCache = {};
+        var postsCache = {};
 
         // Parse frontmatter từ nội dung .md
         function parseFrontmatter(text) {
@@ -1929,7 +1929,7 @@
         // HỆ THỐNG SẢN PHẨM ĐỘNG - ĐỌC FILE .md TỪ /products/
         // ==========================================
 
-        const productsCache = {};
+        var productsCache = {};
 
         async function loadProductsIndex() {
             try {
@@ -2071,7 +2071,7 @@
 
         // ==========================================
         // BẢN ĐỒ ĐỊNH TUYẾN URL
-        const routeMap = {
+        var routeMap = {
             'home': '/',
             'about': '/gioi-thieu',
             'consulting': '/tu-van',
