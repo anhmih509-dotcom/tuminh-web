@@ -1754,33 +1754,72 @@
         if(closeMobileMenuBtn) closeMobileMenuBtn.addEventListener('click', toggleMobileMenu);
 
         // ==========================================
-        // HỆ THỐNG TRI THỨC ĐỘNG - FETCH TỪ /posts/*.json
+        // HỆ THỐNG TRI THỨC ĐỘNG - ĐỌC FILE .md TỪ /posts/
         // ==========================================
 
-        // Cache bài viết đã load
+        // Thêm thư viện parse Markdown (marked.js) và frontmatter
+        (function() {
+            const s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+            document.head.appendChild(s);
+        })();
+
         const postsCache = {};
 
-        // Fetch danh sách index
+        // Parse frontmatter từ nội dung .md
+        function parseFrontmatter(text) {
+            const match = text.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+            if (!match) return { meta: {}, body: text };
+            const meta = {};
+            match[1].split('\n').forEach(line => {
+                const idx = line.indexOf(':');
+                if (idx === -1) return;
+                const key = line.slice(0, idx).trim();
+                const val = line.slice(idx + 1).trim().replace(/^["']|["']$/g, '');
+                meta[key] = val;
+            });
+            return { meta, body: match[2].trim() };
+        }
+
+        // Fetch danh sách slug từ manifest.md (1 slug mỗi dòng)
         async function loadPostsIndex() {
             try {
-                const res = await fetch('/posts/index.json?t=' + Date.now());
-                if (!res.ok) throw new Error('No index');
-                return await res.json(); // [{ slug, title, category, summary, thumbnail, read_time }, ...]
+                const res = await fetch('/posts/manifest.md?t=' + Date.now());
+                if (!res.ok) throw new Error('No manifest');
+                const text = await res.text();
+                const slugs = text.split('\n').map(s => s.trim()).filter(Boolean);
+                const posts = [];
+                for (const slug of slugs) {
+                    const p = await loadPost(slug);
+                    if (p) posts.push(p);
+                }
+                return posts;
             } catch(e) {
-                console.warn('posts/index.json not found, scanning known posts');
+                console.warn('manifest.md not found');
                 return null;
             }
         }
 
-        // Fetch bài viết theo slug
+        // Fetch và parse file .md theo slug
         async function loadPost(slug) {
             if (postsCache[slug]) return postsCache[slug];
             try {
-                const res = await fetch('/posts/' + slug + '.json?t=' + Date.now());
-                if (!res.ok) throw new Error('Post not found');
-                const data = await res.json();
-                postsCache[slug] = data;
-                return data;
+                const res = await fetch('/posts/' + slug + '.md?t=' + Date.now());
+                if (!res.ok) throw new Error('Post not found: ' + slug);
+                const text = await res.text();
+                const { meta, body } = parseFrontmatter(text);
+                const post = {
+                    slug: meta.slug || slug,
+                    title: meta.title || slug,
+                    category: meta.category || 'Tri thức',
+                    summary: meta.summary || '',
+                    thumbnail: meta.thumbnail || '/images/default-article.jpg',
+                    thumbnail_alt: meta.thumbnail_alt || meta.title || slug,
+                    read_time: meta.read_time || '5 phút đọc',
+                    body: body
+                };
+                postsCache[slug] = post;
+                return post;
             } catch(e) {
                 console.error('Cannot load post:', slug, e);
                 return null;
@@ -1795,16 +1834,22 @@
 
             let posts = await loadPostsIndex();
 
-            // Nếu không có index.json, dùng danh sách hardcode từ slugs đã biết
-            if (!posts) {
-                const knownSlugs = [
+            // Fallback: thử load các bài cũ .json nếu manifest chưa có
+            if (!posts || posts.length === 0) {
+                posts = [];
+                // Thử load bài cũ dạng .json (2 bài gốc)
+                const legacySlugs = [
                     'nhiet-do-duc-kim-loai-khai-niem-nhiet-du',
                     'luyen-thep-bang-lo-ho-quang-dien-eaf'
                 ];
-                posts = [];
-                for (const slug of knownSlugs) {
-                    const p = await loadPost(slug);
-                    if (p) posts.push(p);
+                for (const slug of legacySlugs) {
+                    try {
+                        const res = await fetch('/posts/' + slug + '.json?t=' + Date.now());
+                        if (res.ok) {
+                            const data = await res.json();
+                            posts.push(data);
+                        }
+                    } catch(e) {}
                 }
             }
 
@@ -1813,59 +1858,60 @@
                 return;
             }
 
-            // Xóa loading
             if (loading) loading.remove();
 
-            // Render từng card
-            const cards = posts.map(post => `
-                <div class="bg-tm-black border border-tm-border hover:border-blue-500 transition-colors group flex flex-col cursor-pointer"
-                     onclick="navigateToArticle('${post.slug}')">
-                    <div class="h-60 overflow-hidden relative">
-                        <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10"></div>
-                        <img src="${post.thumbnail || '/images/default-article.jpg'}"
-                             alt="${post.thumbnail_alt || post.title}"
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 text-gray-500 text-xs">
-                    </div>
-                    <div class="p-8 flex flex-col flex-grow">
-                        <div class="flex items-center gap-3 mb-4">
-                            <span class="bg-blue-900/50 text-blue-400 text-[10px] uppercase tracking-widest font-bold px-3 py-1">${post.category || 'Tri thức'}</span>
-                            <span class="text-xs text-gray-500 font-light"><i class="fa-regular fa-clock mr-1"></i> ${post.read_time || '5 phút đọc'}</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors leading-snug">${post.title}</h3>
-                        <p class="text-sm font-light text-gray-400 line-clamp-3 mb-6 flex-grow">${post.summary || ''}</p>
-                        <span class="text-xs font-bold uppercase tracking-widest text-white group-hover:text-blue-400 flex items-center gap-2">
-                            Đọc bài viết <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-2"></i>
-                        </span>
-                    </div>
-                </div>
-            `).join('');
+            const cards = posts.map(function(post) {
+                return '<div class="bg-tm-black border border-tm-border hover:border-blue-500 transition-colors group flex flex-col cursor-pointer" onclick="navigateToArticle('' + post.slug + '')">' +
+                    '<div class="h-60 overflow-hidden relative">' +
+                        '<div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10"></div>' +
+                        '<img src="' + post.thumbnail + '" alt="' + post.thumbnail_alt + '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 text-gray-500 text-xs">' +
+                    '</div>' +
+                    '<div class="p-8 flex flex-col flex-grow">' +
+                        '<div class="flex items-center gap-3 mb-4">' +
+                            '<span class="bg-blue-900/50 text-blue-400 text-[10px] uppercase tracking-widest font-bold px-3 py-1">' + post.category + '</span>' +
+                            '<span class="text-xs text-gray-500 font-light"><i class="fa-regular fa-clock mr-1"></i> ' + post.read_time + '</span>' +
+                        '</div>' +
+                        '<h3 class="text-xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors leading-snug">' + post.title + '</h3>' +
+                        '<p class="text-sm font-light text-gray-400 line-clamp-3 mb-6 flex-grow">' + post.summary + '</p>' +
+                        '<span class="text-xs font-bold uppercase tracking-widest text-white group-hover:text-blue-400 flex items-center gap-2">Đọc bài viết <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-2"></i></span>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
 
             grid.innerHTML = cards;
         }
 
         // Navigate đến bài viết theo slug
         async function navigateToArticle(slug) {
-            // Hiển thị trang dynamic ngay
             navigate('article-dynamic', true, '/tri-thuc/' + slug);
 
-            // Load bài viết
+            // Hiện loading
+            document.getElementById('article-body').innerHTML = '<p class="text-gray-500 text-center py-12"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Đang tải bài viết...</p>';
+
             const post = await loadPost(slug);
             if (!post) {
                 document.getElementById('article-body').innerHTML = '<p class="text-red-400">Không tải được bài viết. Vui lòng thử lại.</p>';
                 return;
             }
 
-            // Render nội dung
-            document.getElementById('article-breadcrumb').textContent = post.title.substring(0, 50) + '...';
-            document.getElementById('article-category').textContent = post.category || 'Tri thức';
+            document.getElementById('article-breadcrumb').textContent = post.title.substring(0, 50) + (post.title.length > 50 ? '...' : '');
+            document.getElementById('article-category').textContent = post.category;
             document.getElementById('article-title').textContent = post.title;
-            document.getElementById('article-read-time').innerHTML = '<i class="fa-regular fa-clock mr-2"></i>' + (post.read_time || '5 phút đọc');
-            document.getElementById('article-body').innerHTML = post.body || '';
+            document.getElementById('article-read-time').innerHTML = '<i class="fa-regular fa-clock mr-2"></i>' + post.read_time;
 
-            // Cập nhật title
+            // Render Markdown thành HTML nếu có marked.js, fallback plain text
+            const bodyEl = document.getElementById('article-body');
+            if (window.marked) {
+                bodyEl.innerHTML = window.marked.parse(post.body);
+            } else {
+                // Chờ marked load xong
+                setTimeout(() => {
+                    bodyEl.innerHTML = window.marked ? window.marked.parse(post.body) : post.body.replace(/\n/g, '<br>');
+                }, 800);
+            }
+
             document.title = post.title + ' | Tứ Minh';
 
-            // Cập nhật canonical
             let canonicalTag = document.getElementById('dynamic-canonical');
             if (!canonicalTag) {
                 canonicalTag = document.createElement('link');
@@ -1875,13 +1921,214 @@
             }
             canonicalTag.href = 'https://tuminh.com.vn/tri-thuc/' + slug;
 
-            // Lưu slug vào history state để back/forward hoạt động
             window.history.replaceState({ pageId: 'article-dynamic', articleSlug: slug }, '', '/tri-thuc/' + slug);
+        }
+
+
+        // ==========================================
+        // HỆ THỐNG SẢN PHẨM ĐỘNG - ĐỌC FILE .md TỪ /products/
+        // ==========================================
+
+        const productsCache = {};
+
+        async function loadProductsIndex() {
+            try {
+                const res = await fetch('/products/manifest.md?t=' + Date.now());
+                if (!res.ok) throw new Error('No manifest');
+                const text = await res.text();
+                return text.split('\n').map(s => s.trim()).filter(Boolean);
+            } catch(e) {
+                return ['may-do-nhiet-do-kim-loai-long','may-mai-cam-tay','dam-khi-nen','cap-nhiet-dien','coc-mau','may-cua-khi-nen','dem-chong-rung'];
+            }
+        }
+
+        async function loadProduct(slug) {
+            if (productsCache[slug]) return productsCache[slug];
+            try {
+                const res = await fetch('/products/' + slug + '.md?t=' + Date.now());
+                if (!res.ok) throw new Error('Product not found');
+                const text = await res.text();
+                const { meta, body } = parseFrontmatter(text);
+                const product = {
+                    slug: meta.slug || slug,
+                    title: meta.title || slug,
+                    short_description: meta.short_description || '',
+                    category: meta.category || '',
+                    featured: meta.featured === 'true',
+                    thumbnail: meta.thumbnail || '/images/default-product.jpg',
+                    thumbnail_alt: meta.thumbnail_alt || meta.title || slug,
+                    body: body
+                };
+                productsCache[slug] = product;
+                return product;
+            } catch(e) {
+                console.error('Cannot load product:', slug, e);
+                return null;
+            }
+        }
+
+        // Render trang sản phẩm động
+        async function renderProductsPage() {
+            const slugs = await loadProductsIndex();
+            const products = [];
+            for (const slug of slugs) {
+                const p = await loadProduct(slug);
+                if (p) products.push(p);
+            }
+
+            const featured = products.filter(p => p.featured);
+            const others = products.filter(p => !p.featured);
+
+            function productCard(p) {
+                return '<div class="bg-tm-dark border border-tm-border hover:border-blue-500 transition group flex flex-col h-full">' +
+                    '<div class="bg-white p-4 h-[200px] flex justify-center items-center overflow-hidden border-b border-tm-border">' +
+                        '<img src="' + p.thumbnail + '" alt="' + p.thumbnail_alt + '" class="max-h-full object-contain group-hover:scale-105 transition-transform duration-500 text-gray-500 text-xs">' +
+                    '</div>' +
+                    '<div class="p-6 flex flex-col flex-grow">' +
+                        '<h3 class="text-lg font-bold text-white mb-2 leading-snug">' + p.title + '</h3>' +
+                        '<p class="text-xs text-gray-400 mb-6 flex-grow">' + p.short_description + '</p>' +
+                        '<button onclick="navigateToProduct('' + p.slug + '')" class="w-full text-center border border-white text-white px-4 py-2 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition">' +
+                            'Xem thêm chi tiết' +
+                        '</button>' +
+                    '</div>' +
+                '</div>';
+            }
+
+            // Render vào các grid section
+            const featuredGrid = document.getElementById('products-featured-grid');
+            if (featuredGrid && featured.length > 0) {
+                featuredGrid.innerHTML = featured.map(productCard).join('');
+            }
+
+            // Render theo category vào grid tổng
+            const allGrid = document.getElementById('products-all-grid');
+            if (allGrid) {
+                // Group by category
+                const cats = {};
+                products.forEach(p => {
+                    if (!cats[p.category]) cats[p.category] = [];
+                    cats[p.category].push(p);
+                });
+                let html = '';
+                for (const [cat, items] of Object.entries(cats)) {
+                    html += '<div class="mb-16">' +
+                        '<h3 class="text-xl font-bold text-white mb-6 border-b border-tm-border pb-3">' + cat + '</h3>' +
+                        '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">' +
+                        items.map(productCard).join('') +
+                        '</div>' +
+                    '</div>';
+                                }
+                allGrid.innerHTML = html;
+            }
+        }
+
+        // Navigate đến trang chi tiết sản phẩm
+        async function navigateToProduct(slug) {
+            navigate('product-dynamic', true, '/san-pham-thiet-bi/' + slug);
+
+            document.getElementById('product-detail-body').innerHTML = '<p class="text-gray-500 text-center py-12"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Đang tải...</p>';
+
+            const product = await loadProduct(slug);
+            if (!product) {
+                document.getElementById('product-detail-body').innerHTML = '<p class="text-red-400">Không tải được sản phẩm.</p>';
+                return;
+            }
+
+            document.getElementById('product-detail-title').textContent = product.title;
+            document.getElementById('product-detail-breadcrumb').textContent = product.title;
+            document.getElementById('product-detail-category').textContent = product.category;
+
+            const bodyEl = document.getElementById('product-detail-body');
+            if (window.marked) {
+                bodyEl.innerHTML = window.marked.parse(product.body);
+            } else {
+                setTimeout(() => {
+                    bodyEl.innerHTML = window.marked ? window.marked.parse(product.body) : product.body.replace(/\n/g, '<br>');
+                }, 800);
+            }
+
+            document.title = product.title + ' | Tứ Minh';
+            window.history.replaceState({ pageId: 'product-dynamic', productSlug: slug }, '', '/san-pham-thiet-bi/' + slug);
+        }
+
+        // Load settings từ file .md
+        async function loadSettings() {
+            try {
+                const res = await fetch('/settings/site.md?t=' + Date.now());
+                if (!res.ok) return;
+                const text = await res.text();
+                const { meta } = parseFrontmatter(text);
+
+                // Cập nhật số điện thoại và zalo
+                if (meta.phone) {
+                    document.querySelectorAll('[data-setting="phone"]').forEach(el => el.textContent = meta.phone);
+                }
+                if (meta.zalo_url) {
+                    document.querySelectorAll('[data-setting="zalo_url"]').forEach(el => el.href = meta.zalo_url);
+                }
+            } catch(e) {}
         }
 
         // ==========================================
         // BẢN ĐỒ ĐỊNH TUYẾN URL
         // ==========================================
+        // ==========================================
+        // HỆ THỐNG SẢN PHẨM ĐỘNG - FETCH HTML TỪ /products/*.md
+        // ==========================================
+
+        const productsCache = {};
+
+        async function loadProduct(slug) {
+            if (productsCache[slug]) return productsCache[slug];
+            try {
+                const res = await fetch('/products/' + slug + '.md?t=' + Date.now());
+                if (!res.ok) throw new Error('Product not found');
+                const text = await res.text();
+                const { meta, body } = parseFrontmatter(text);
+                productsCache[slug] = { 
+                    slug: meta.slug || slug,
+                    title: meta.title || slug,
+                    body: body 
+                };
+                return productsCache[slug];
+            } catch(e) {
+                console.error('Cannot load product:', slug, e);
+                return null;
+            }
+        }
+
+        // Navigate đến trang sản phẩm - fetch nội dung mới từ .md rồi inject vào div tĩnh
+        async function refreshProductPage(slug) {
+            const pageId = 'product-' + slug;
+            const page = document.getElementById('page-' + pageId);
+            if (!page) return;
+
+            // Tìm div nội dung chính (bỏ qua breadcrumbs)
+            const contentDiv = page.querySelector('.max-w-5xl, .max-w-6xl');
+            if (!contentDiv) return;
+
+            const product = await loadProduct(slug);
+            if (!product) return;
+
+            // Giữ breadcrumbs, thay nội dung sau breadcrumbs
+            const breadcrumb = contentDiv.querySelector('.text-xs.font-semibold.tracking-widest');
+            if (breadcrumb) {
+                // Xóa tất cả nội dung sau breadcrumbs
+                let next = breadcrumb.nextElementSibling;
+                while (next) {
+                    const toRemove = next;
+                    next = next.nextElementSibling;
+                    toRemove.remove();
+                }
+                // Inject nội dung mới từ .md
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = product.body;
+                while (tempDiv.firstChild) {
+                    contentDiv.appendChild(tempDiv.firstChild);
+                }
+            }
+        }
+
         const routeMap = {
             'home': '/',
             'about': '/gioi-thieu',
@@ -1916,6 +2163,17 @@
             // Render danh sách khi vào trang knowledge
             if (pageId === 'knowledge') {
                 renderKnowledgeGrid();
+            }
+            // Refresh product content từ .md khi vào trang sản phẩm
+            const productSlugs = ['may-do-nhiet-do-kim-loai-long','dam-khi-nen','cap-nhiet-dien','coc-mau','may-cua-khi-nen','may-mai-cam-tay','dem-chong-rung'];
+            productSlugs.forEach(function(slug) {
+                if (pageId === 'product-' + slug) {
+                    refreshProductPage(slug);
+                }
+            });
+            // Render danh sách sản phẩm
+            if (pageId === 'products') {
+                renderProductsPage();
             }
 
             // ==========================================
@@ -1970,20 +2228,13 @@
                 navigate('about', false);
             } else if (currentPath === '/tu-van' || currentPath === '/tu-van/') {
                 navigate('consulting', false);
-            } else if (currentPath === '/san-pham-thiet-bi/may-do-nhiet-do-kim-loai-long' || currentPath === '/san-pham-thiet-bi/may-do-nhiet-do-kim-loai-long/') {
-                navigate('product-may-do-nhiet-do-kim-loai-long', false);
-            } else if (currentPath === '/san-pham-thiet-bi/dam-khi-nen' || currentPath === '/san-pham-thiet-bi/dam-khi-nen/') {
-                navigate('product-dam-khi-nen', false);
-            } else if (currentPath === '/san-pham-thiet-bi/cap-nhiet-dien' || currentPath === '/san-pham-thiet-bi/cap-nhiet-dien/') {
-                navigate('product-cap-nhiet-dien', false);
-            } else if (currentPath === '/san-pham-thiet-bi/coc-mau' || currentPath === '/san-pham-thiet-bi/coc-mau/') {
-                navigate('product-coc-mau', false);
-            } else if (currentPath === '/san-pham-thiet-bi/dem-chong-rung' || currentPath === '/san-pham-thiet-bi/dem-chong-rung/') {
-                navigate('product-dem-chong-rung', false);
-            } else if (currentPath === '/san-pham-thiet-bi/may-cua-khi-nen' || currentPath === '/san-pham-thiet-bi/may-cua-khi-nen/') {
-                navigate('product-may-cua-khi-nen', false);
-            } else if (currentPath === '/san-pham-thiet-bi/may-mai-cam-tay' || currentPath === '/san-pham-thiet-bi/may-mai-cam-tay/') {
-                navigate('product-may-mai-cam-tay', false);
+            } else if (currentPath.startsWith('/san-pham-thiet-bi/')) {
+                const slug = currentPath.replace('/san-pham-thiet-bi/', '').replace(/\/$/, '');
+                if (slug) {
+                    navigateToProduct(slug);
+                } else {
+                    navigate('products', false);
+                }
             } else if (currentPath === '/san-pham-thiet-bi' || currentPath === '/san-pham-thiet-bi/') {
                 navigate('products', false);
             } else if (currentPath === '/tri-thuc' || currentPath === '/tri-thuc/') {
@@ -2006,6 +2257,8 @@
         window.addEventListener('popstate', (event) => {
             if (event.state && event.state.articleSlug) {
                 navigateToArticle(event.state.articleSlug);
+            } else if (event.state && event.state.productSlug) {
+                navigateToProduct(event.state.productSlug);
             } else if (event.state && event.state.pageId) {
                 navigate(event.state.pageId, false);
             } else {
@@ -2015,6 +2268,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             handleInitialRoute();
+            loadSettings();
         });
 
 
