@@ -1,6 +1,9 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: anhmih509-dotcom/tuminh-web
   branch: main
+  base_url: https://tuminh-oauth.anh-mih-509.workers.dev
+  auth_endpoint: /auth
 
 media_folder: "images/uploads"
 public_folder: "/images/uploads"
@@ -8,9 +11,6 @@ locale: "vi"
 
 collections:
 
-  # ============================================
-  # 1. BÀI VIẾT TRI THỨC
-  # ============================================
   - name: "posts"
     label: "Bài viết Tri Thức"
     label_singular: "Bài viết"
@@ -19,7 +19,7 @@ collections:
     slug: "{{slug}}"
     identifier_field: slug
     fields:
-      - { label: "Slug (URL)", name: "slug", widget: "string", hint: "Ví dụ: ten-bai-viet — chữ thường, không dấu, dùng dấu gạch ngang" }
+      - { label: "Slug (URL)", name: "slug", widget: "string" }
       - { label: "Tiêu đề", name: "title", widget: "string" }
       - label: "Danh mục"
         name: "category"
@@ -31,9 +31,6 @@ collections:
       - { label: "Thời gian đọc", name: "read_time", widget: "string", default: "5 phút đọc" }
       - { label: "Nội dung", name: "body", widget: "markdown" }
 
-  # ============================================
-  # 2. SẢN PHẨM
-  # ============================================
   - name: "products"
     label: "Sản phẩm"
     label_singular: "Sản phẩm"
@@ -42,21 +39,18 @@ collections:
     slug: "{{slug}}"
     identifier_field: slug
     fields:
-      - { label: "Slug (URL)", name: "slug", widget: "string", hint: "Ví dụ: may-do-nhiet-do — chữ thường, không dấu, dùng dấu gạch ngang" }
+      - { label: "Slug (URL)", name: "slug", widget: "string" }
       - { label: "Tên sản phẩm", name: "title", widget: "string" }
-      - { label: "Mô tả ngắn (hiển thị ở card)", name: "short_description", widget: "text" }
+      - { label: "Mô tả ngắn", name: "short_description", widget: "text" }
       - label: "Danh mục"
         name: "category"
         widget: "select"
         options: ["Phân tích & Đo lường", "Thiết bị Đúc", "Phụ trợ & Gia công", "Vật tư & Phụ tùng"]
-      - { label: "Sản phẩm chủ đạo (hiển thị nổi bật)", name: "featured", widget: "boolean", default: false }
-      - { label: "Ảnh thumbnail (card)", name: "thumbnail", widget: "image" }
+      - { label: "Sản phẩm chủ đạo", name: "featured", widget: "boolean", default: false }
+      - { label: "Ảnh thumbnail", name: "thumbnail", widget: "image" }
       - { label: "Alt text ảnh", name: "thumbnail_alt", widget: "string", default: "" }
-      - { label: "Nội dung trang chi tiết", name: "body", widget: "markdown", hint: "Mô tả đầy đủ, thông số kỹ thuật, ảnh sản phẩm..." }
+      - { label: "Nội dung chi tiết", name: "body", widget: "markdown" }
 
-  # ============================================
-  # 3. CÀI ĐẶT CHUNG
-  # ============================================
   - name: "settings"
     label: "Cài đặt Website"
     files:
@@ -69,8 +63,8 @@ collections:
           - { label: "Link Facebook", name: "facebook_url", widget: "string" }
           - { label: "Địa chỉ", name: "address", widget: "string" }
           - { label: "Email", name: "email", widget: "string" }
-          - { label: "Tagline trang chủ (dòng lớn)", name: "tagline_hero", widget: "string" }
-          - { label: "Tagline phụ trang chủ", name: "tagline_sub", widget: "text" }
+          - { label: "Tagline trang chủ", name: "tagline_hero", widget: "string" }
+          - { label: "Tagline phụ", name: "tagline_sub", widget: "text" }
           - { label: "Số năm kinh nghiệm", name: "years_experience", widget: "string" }
           - { label: "Năm thành lập", name: "founded_year", widget: "string" }
 
