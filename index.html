@@ -2071,64 +2071,6 @@
 
         // ==========================================
         // BẢN ĐỒ ĐỊNH TUYẾN URL
-        // ==========================================
-        // ==========================================
-        // HỆ THỐNG SẢN PHẨM ĐỘNG - FETCH HTML TỪ /products/*.md
-        // ==========================================
-
-        const productsCache = {};
-
-        async function loadProduct(slug) {
-            if (productsCache[slug]) return productsCache[slug];
-            try {
-                const res = await fetch('/products/' + slug + '.md?t=' + Date.now());
-                if (!res.ok) throw new Error('Product not found');
-                const text = await res.text();
-                const { meta, body } = parseFrontmatter(text);
-                productsCache[slug] = { 
-                    slug: meta.slug || slug,
-                    title: meta.title || slug,
-                    body: body 
-                };
-                return productsCache[slug];
-            } catch(e) {
-                console.error('Cannot load product:', slug, e);
-                return null;
-            }
-        }
-
-        // Navigate đến trang sản phẩm - fetch nội dung mới từ .md rồi inject vào div tĩnh
-        async function refreshProductPage(slug) {
-            const pageId = 'product-' + slug;
-            const page = document.getElementById('page-' + pageId);
-            if (!page) return;
-
-            // Tìm div nội dung chính (bỏ qua breadcrumbs)
-            const contentDiv = page.querySelector('.max-w-5xl, .max-w-6xl');
-            if (!contentDiv) return;
-
-            const product = await loadProduct(slug);
-            if (!product) return;
-
-            // Giữ breadcrumbs, thay nội dung sau breadcrumbs
-            const breadcrumb = contentDiv.querySelector('.text-xs.font-semibold.tracking-widest');
-            if (breadcrumb) {
-                // Xóa tất cả nội dung sau breadcrumbs
-                let next = breadcrumb.nextElementSibling;
-                while (next) {
-                    const toRemove = next;
-                    next = next.nextElementSibling;
-                    toRemove.remove();
-                }
-                // Inject nội dung mới từ .md
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = product.body;
-                while (tempDiv.firstChild) {
-                    contentDiv.appendChild(tempDiv.firstChild);
-                }
-            }
-        }
-
         const routeMap = {
             'home': '/',
             'about': '/gioi-thieu',
