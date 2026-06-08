@@ -1,16 +1,16 @@
 backend:
   name: git-gateway
   branch: main
-# Netlify Identity - dùng để đăng nhập
-# Bật trong Netlify Dashboard > Identity
 
-media_folder: "images/posts"       # Ảnh upload lưu vào đây
-public_folder: "/images/posts"     # Đường dẫn public của ảnh
-
-# Locale tiếng Việt
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
 locale: "vi"
 
 collections:
+
+  # ============================================
+  # 1. BÀI VIẾT TRI THỨC
+  # ============================================
   - name: "posts"
     label: "Bài viết Tri Thức"
     label_singular: "Bài viết"
@@ -19,45 +19,66 @@ collections:
     slug: "{{slug}}"
     identifier_field: slug
     fields:
-      - label: "Đường dẫn URL (slug)"
-        name: "slug"
-        widget: "string"
-        hint: "Ví dụ: ky-thuat-duc-nhom-ap-luc — chỉ dùng chữ thường, không dấu, dùng dấu gạch ngang"
-        pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Chỉ dùng chữ thường, số và dấu gạch ngang"]
-
-      - label: "Tiêu đề bài viết"
-        name: "title"
-        widget: "string"
-
-      - label: "Danh mục (Tag)"
+      - { label: "Slug (URL)", name: "slug", widget: "string", hint: "Ví dụ: ten-bai-viet — chữ thường, không dấu, dùng dấu gạch ngang" }
+      - { label: "Tiêu đề", name: "title", widget: "string" }
+      - label: "Danh mục"
         name: "category"
         widget: "select"
-        options:
-          - { label: "Kinh nghiệm Đúc", value: "Kinh nghiệm Đúc" }
-          - { label: "Công nghệ Luyện kim", value: "Công nghệ Luyện kim" }
-          - { label: "Thiết bị & Đo lường", value: "Thiết bị & Đo lường" }
-          - { label: "Tin tức", value: "Tin tức" }
+        options: ["Kinh nghiệm Đúc", "Công nghệ Luyện kim", "Thiết bị & Đo lường", "Tin tức"]
+      - { label: "Tóm tắt", name: "summary", widget: "text" }
+      - { label: "Ảnh thumbnail", name: "thumbnail", widget: "image" }
+      - { label: "Alt text ảnh", name: "thumbnail_alt", widget: "string", default: "" }
+      - { label: "Thời gian đọc", name: "read_time", widget: "string", default: "5 phút đọc" }
+      - { label: "Nội dung", name: "body", widget: "markdown" }
 
-      - label: "Tóm tắt (hiển thị ở trang danh sách)"
-        name: "summary"
-        widget: "text"
+  # ============================================
+  # 2. SẢN PHẨM
+  # ============================================
+  - name: "products"
+    label: "Sản phẩm"
+    label_singular: "Sản phẩm"
+    folder: "products"
+    create: true
+    slug: "{{slug}}"
+    identifier_field: slug
+    fields:
+      - { label: "Slug (URL)", name: "slug", widget: "string", hint: "Ví dụ: may-do-nhiet-do — chữ thường, không dấu, dùng dấu gạch ngang" }
+      - { label: "Tên sản phẩm", name: "title", widget: "string" }
+      - { label: "Mô tả ngắn (hiển thị ở card)", name: "short_description", widget: "text" }
+      - label: "Danh mục"
+        name: "category"
+        widget: "select"
+        options: ["Phân tích & Đo lường", "Thiết bị Đúc", "Phụ trợ & Gia công", "Vật tư & Phụ tùng"]
+      - { label: "Sản phẩm chủ đạo (hiển thị nổi bật)", name: "featured", widget: "boolean", default: false }
+      - { label: "Ảnh thumbnail (card)", name: "thumbnail", widget: "image" }
+      - { label: "Alt text ảnh", name: "thumbnail_alt", widget: "string", default: "" }
+      - { label: "Nội dung trang chi tiết", name: "body", widget: "markdown", hint: "Mô tả đầy đủ, thông số kỹ thuật, ảnh sản phẩm..." }
 
-      - label: "Ảnh thumbnail (ảnh bìa)"
-        name: "thumbnail"
-        widget: "image"
-        hint: "Ảnh đại diện hiển thị trong danh sách bài viết"
+  # ============================================
+  # 3. CÀI ĐẶT CHUNG
+  # ============================================
+  - name: "settings"
+    label: "Cài đặt Website"
+    files:
+      - label: "Thông tin chung & Liên hệ"
+        name: "site"
+        file: "settings/site.md"
+        fields:
+          - { label: "Số điện thoại", name: "phone", widget: "string" }
+          - { label: "Link Zalo", name: "zalo_url", widget: "string" }
+          - { label: "Link Facebook", name: "facebook_url", widget: "string" }
+          - { label: "Địa chỉ", name: "address", widget: "string" }
+          - { label: "Email", name: "email", widget: "string" }
+          - { label: "Tagline trang chủ (dòng lớn)", name: "tagline_hero", widget: "string" }
+          - { label: "Tagline phụ trang chủ", name: "tagline_sub", widget: "text" }
+          - { label: "Số năm kinh nghiệm", name: "years_experience", widget: "string" }
+          - { label: "Năm thành lập", name: "founded_year", widget: "string" }
 
-      - label: "Alt text của ảnh thumbnail"
-        name: "thumbnail_alt"
-        widget: "string"
-        default: ""
-
-      - label: "Thời gian đọc"
-        name: "read_time"
-        widget: "string"
-        default: "5 phút đọc"
-
-      - label: "Nội dung bài viết"
-        name: "body"
-        widget: "markdown"
-        hint: "Hỗ trợ Markdown: **in đậm**, *in nghiêng*, ## Tiêu đề, - Danh sách, v.v."
+      - label: "Trang Giới Thiệu"
+        name: "about"
+        file: "settings/about.md"
+        fields:
+          - { label: "Tiêu đề hero", name: "hero_title", widget: "string" }
+          - { label: "Đoạn giới thiệu chính", name: "intro", widget: "markdown" }
+          - { label: "Đoạn giới thiệu phụ", name: "intro_sub", widget: "text" }
+          - { label: "Link PDF Hồ sơ năng lực", name: "profile_pdf_url", widget: "string" }
