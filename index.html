@@ -1802,26 +1802,36 @@
             }
         }
 
-        // Fetch và parse file .md theo slug
+        // Fetch và parse file .md hoặc .json theo slug
         async function loadPost(slug) {
             if (postsCache[slug]) return postsCache[slug];
             try {
-                const res = await fetch('/posts/' + slug + '.md?t=' + Date.now());
-                if (!res.ok) throw new Error('Post not found: ' + slug);
-                const text = await res.text();
-                const { meta, body } = parseFrontmatter(text);
-                const post = {
-                    slug: meta.slug || slug,
-                    title: meta.title || slug,
-                    category: meta.category || 'Tri thức',
-                    summary: meta.summary || '',
-                    thumbnail: meta.thumbnail || '/images/default-article.jpg',
-                    thumbnail_alt: meta.thumbnail_alt || meta.title || slug,
-                    read_time: meta.read_time || '5 phút đọc',
-                    body: body
-                };
-                postsCache[slug] = post;
-                return post;
+                // Thử .md trước (bài mới từ CMS)
+                const resMd = await fetch('/posts/' + slug + '.md?t=' + Date.now());
+                if (resMd.ok) {
+                    const text = await resMd.text();
+                    const { meta, body } = parseFrontmatter(text);
+                    const post = {
+                        slug: meta.slug || slug,
+                        title: meta.title || slug,
+                        category: meta.category || 'Tri thức',
+                        summary: meta.summary || '',
+                        thumbnail: meta.thumbnail || '/images/default-article.jpg',
+                        thumbnail_alt: meta.thumbnail_alt || meta.title || slug,
+                        read_time: meta.read_time || '5 phút đọc',
+                        body: body
+                    };
+                    postsCache[slug] = post;
+                    return post;
+                }
+                // Fallback: thử .json (bài cũ)
+                const resJson = await fetch('/posts/' + slug + '.json?t=' + Date.now());
+                if (resJson.ok) {
+                    const data = await resJson.json();
+                    postsCache[slug] = data;
+                    return data;
+                }
+                throw new Error('Post not found: ' + slug);
             } catch(e) {
                 console.error('Cannot load post:', slug, e);
                 return null;
@@ -1904,11 +1914,10 @@
             // Render Markdown thành HTML nếu có marked.js, fallback plain text
             const bodyEl = document.getElementById('article-body');
             function renderBody() {
-                if (window.marked) {
-                    bodyEl.innerHTML = window.marked.parse(post.body);
-                } else {
-                    setTimeout(renderBody, 200);
-                }
+                if (!window.marked) { setTimeout(renderBody, 200); return; }
+                // Nếu body có thẻ HTML (bài cũ .json) thì inject thẳng, không parse Markdown
+                const isHTML = /^\s*<[a-z]/i.test(post.body);
+                bodyEl.innerHTML = isHTML ? post.body : window.marked.parse(post.body);
             }
             renderBody();
 
