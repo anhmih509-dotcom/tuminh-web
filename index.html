@@ -2106,13 +2106,7 @@
             if (pageId === 'knowledge') {
                 renderKnowledgeGrid();
             }
-            // Refresh product content từ .md khi vào trang sản phẩm
-            const productSlugs = ['may-do-nhiet-do-kim-loai-long','dam-khi-nen','cap-nhiet-dien','coc-mau','may-cua-khi-nen','may-mai-cam-tay','dem-chong-rung'];
-            productSlugs.forEach(function(slug) {
-                if (pageId === 'product-' + slug) {
-                    refreshProductPage(slug);
-                }
-            });
+            // Trang sản phẩm dùng HTML tĩnh - không cần fetch
             // Render danh sách sản phẩm
             if (pageId === 'products') {
                 renderProductsPage();
