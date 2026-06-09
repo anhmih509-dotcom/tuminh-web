@@ -6,39 +6,16 @@
 /vn/Dich-vu-San-pham/May-cua-dung-khi-nen.aspx                                                        /san-pham-thiet-bi/may-cua-khi-nen                  301
 /vn/Dich-vu-San-pham/May-mai-trong-may-mai-bang-May-mai-lac-may-mai-lo-sau-cam-tay.aspx               /san-pham-thiet-bi/may-mai-cam-tay                  301
 /vn/Dich-vu-San-pham/DEM-CHONG-RUNG-GIAM-CHAN.aspx                                                    /san-pham-thiet-bi/dem-chong-rung                   301
-/vn/Dich-vu-San-pham/DAM-KHI-NEN-DAM-CAT-DAM-HOI.aspx                                                 /san-pham-thiet-bi/dam-khi-nen                      301
-
-
-# ====================================================================
-# 2. CÁC LINK CŨ CÒN LẠI (Chưa có trang riêng) -> Đẩy về danh mục chung
-# ====================================================================
-/vn/* /san-pham-thiet-bi                            301
+/vn/Dich-vu-San-pham/DAM-KHI-NEN-DAM-CAT-DAM-HOI.aspx                                                /san-pham-thiet-bi/dam-khi-nen                      301
+/vn/*                                                                                                  /san-pham-thiet-bi                                  301
 
 # ====================================================================
-# 3. ĐỊNH TUYẾN SPA CHO WEB MỚI (MÃ 200 - BẮT BUỘC ĐỂ GIỮ LINK KHÔNG BỊ ĐỔI)
+# 2. ĐỊNH TUYẾN SPA (MÃ 200)
 # ====================================================================
 /trang-chu                                              /index.html   200
 /gioi-thieu                                             /index.html   200
 /tu-van                                                 /index.html   200
 /san-pham-thiet-bi                                      /index.html   200
-
-# Nhóm thiết bị
-/san-pham-thiet-bi/may-do-nhiet-do-kim-loai-long        /index.html   200
-/san-pham-thiet-bi/dam-khi-nen                          /index.html   200
-/san-pham-thiet-bi/cap-nhiet-dien                       /index.html   200
-/san-pham-thiet-bi/coc-mau                              /index.html   200
-/san-pham-thiet-bi/may-cua-khi-nen                      /index.html   200
-
-# Tạo sẵn 2 trang SPA cho sản phẩm sắp làm
-/san-pham-thiet-bi/may-mai-cam-tay                      /index.html   200
-/san-pham-thiet-bi/dem-chong-rung                       /index.html   200
-
-# Nhóm Tri thức
+/san-pham-thiet-bi/*                                    /index.html   200
 /tri-thuc                                               /index.html   200
-/tri-thuc/nhiet-do-duc-kim-loai-khai-niem-nhiet-du      /index.html   200
-/tri-thuc/luyen-thep-bang-lo-ho-quang-dien-eaf          /index.html   200
-
-# ====================================================================
-# 4. LƯỚI BẢO VỆ CUỐI CÙNG (Dành cho mọi link phát sinh sau này)
-# ====================================================================
-/* /index.html   200
+/tri-thuc/*                                             /index.html   200
