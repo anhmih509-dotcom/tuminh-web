@@ -1768,6 +1768,8 @@
 
         // Parse frontmatter từ nội dung .md
         function parseFrontmatter(text) {
+            // Normalize line endings (Windows CRLF -> LF)
+            text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
             const match = text.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
             if (!match) return { meta: {}, body: text };
             const meta = {};
@@ -1901,14 +1903,14 @@
 
             // Render Markdown thành HTML nếu có marked.js, fallback plain text
             const bodyEl = document.getElementById('article-body');
-            if (window.marked) {
-                bodyEl.innerHTML = window.marked.parse(post.body);
-            } else {
-                // Chờ marked load xong
-                setTimeout(() => {
-                    bodyEl.innerHTML = window.marked ? window.marked.parse(post.body) : post.body.replace(/\n/g, '<br>');
-                }, 800);
+            function renderBody() {
+                if (window.marked) {
+                    bodyEl.innerHTML = window.marked.parse(post.body);
+                } else {
+                    setTimeout(renderBody, 200);
+                }
             }
+            renderBody();
 
             document.title = post.title + ' | Tứ Minh';
 
