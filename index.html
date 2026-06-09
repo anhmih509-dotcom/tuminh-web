@@ -1987,7 +1987,7 @@
                     '<div class="p-6 flex flex-col flex-grow">' +
                         '<h3 class="text-lg font-bold text-white mb-2 leading-snug">' + p.title + '</h3>' +
                         '<p class="text-xs text-gray-400 mb-6 flex-grow">' + p.short_description + '</p>' +
-                        '<button onclick="navigateToProduct(\'' + p.slug + '\')" class="w-full text-center border border-white text-white px-4 py-2 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition">' +
+                        '<button onclick="navigate(\'product-' + p.slug + '\')" class="w-full text-center border border-white text-white px-4 py-2 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition">' +
                             'Xem thêm chi tiết' +
                         '</button>' +
                     '</div>' +
@@ -2173,7 +2173,7 @@
             } else if (currentPath.startsWith('/san-pham-thiet-bi/')) {
                 const slug = currentPath.replace('/san-pham-thiet-bi/', '').replace(/\/$/, '');
                 if (slug) {
-                    navigateToProduct(slug);
+                    navigate('product-' + slug, false);
                 } else {
                     navigate('products', false);
                 }
@@ -2200,7 +2200,7 @@
             if (event.state && event.state.articleSlug) {
                 navigateToArticle(event.state.articleSlug);
             } else if (event.state && event.state.productSlug) {
-                navigateToProduct(event.state.productSlug);
+                navigate('product-' + event.state.productSlug, false);
             } else if (event.state && event.state.pageId) {
                 navigate(event.state.pageId, false);
             } else {
