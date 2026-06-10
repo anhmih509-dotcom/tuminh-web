@@ -1968,11 +1968,18 @@
 
         async function loadProductsIndex() {
             try {
-                const res = await fetch('/products/manifest.md?t=' + Date.now());
-                if (!res.ok) throw new Error('No manifest');
-                const text = await res.text();
-                return text.split('\n').map(s => s.trim()).filter(Boolean);
+                // Scan GitHub API - tự động không cần manifest
+                const res = await fetch('https://api.github.com/repos/anhmih509-dotcom/tuminh-web/contents/products', {
+                    headers: { 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (!res.ok) throw new Error('GitHub API error');
+                const files = await res.json();
+                return files
+                    .filter(f => f.name.endsWith('.txt') || f.name.endsWith('.md'))
+                    .filter(f => f.name !== 'manifest.md')
+                    .map(f => f.name.replace(/\.(txt|md)$/, ''));
             } catch(e) {
+                // Fallback hardcode
                 return ['may-do-nhiet-do-kim-loai-long','may-mai-cam-tay','dam-khi-nen','cap-nhiet-dien','coc-mau','may-cua-khi-nen','dem-chong-rung'];
             }
         }
@@ -1980,9 +1987,18 @@
         async function loadProduct(slug) {
             if (productsCache[slug]) return productsCache[slug];
             try {
-                const res = await fetch('/products/' + slug + '.md?t=' + Date.now());
-                if (!res.ok) throw new Error('Product not found');
-                const text = await res.text();
+                // Thử .txt trước (CMS mới), sau đó .md (cũ)
+                let text = null;
+                for (const ext of ['.txt', '.md']) {
+                    const res = await fetch('/products/' + slug + ext + '?t=' + Date.now());
+                    if (res.ok) {
+                        const t = await res.text();
+                        if (!t.trim().startsWith('<!') && !t.trim().startsWith('<html')) {
+                            text = t; break;
+                        }
+                    }
+                }
+                if (!text) throw new Error('Product not found: ' + slug);
                 const { meta, body } = parseFrontmatter(text);
                 const product = {
                     slug: meta.slug || slug,
