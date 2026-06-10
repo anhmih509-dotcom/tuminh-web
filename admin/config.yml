@@ -20,6 +20,8 @@ collections:
     folder: "posts"
     create: true
     slug: "{{slug}}"
+    extension: "txt"
+    format: "frontmatter"
     identifier_field: slug
     fields:
       - { label: "Slug (URL)", name: "slug", widget: "string", hint: "Ví dụ: ten-bai-viet — chữ thường, không dấu, dùng dấu gạch ngang" }
