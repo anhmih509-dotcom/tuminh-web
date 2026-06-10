@@ -43,17 +43,27 @@ collections:
     label: "Sản phẩm"
     label_singular: "Sản phẩm"
     folder: "products"
-    create: false
+    create: true
     slug: "{{slug}}"
+    extension: "txt"
+    format: "frontmatter"
     identifier_field: slug
     fields:
       - { label: "Slug (URL)", name: "slug", widget: "string" }
       - { label: "Tên sản phẩm", name: "title", widget: "string" }
       - { label: "Mô tả ngắn (hiển thị ở card)", name: "short_description", widget: "text" }
-      - label: "Danh mục"
-        name: "category"
+      - label: "Danh mục hiển thị"
+        name: "section"
         widget: "select"
-        options: ["Phân tích & Đo lường", "Thiết bị Đúc", "Phụ trợ & Gia công", "Vật tư & Phụ tùng"]
+        hint: "Chọn mục sản phẩm sẽ xuất hiện trong"
+        options:
+          - { label: "⭐ Sản phẩm Chủ Đạo", value: "cat-chu-dao" }
+          - { label: "1. Phân tích & Đo lường", value: "cat-phan-tich" }
+          - { label: "2. Thí nghiệm Cát đúc", value: "cat-thi-nghiem" }
+          - { label: "3. Phụ trợ & Gia công", value: "cat-phu-tro" }
+          - { label: "4. Vật tư & Phụ tùng", value: "cat-vat-tu" }
+          - { label: "5. Danh mục Tổng hợp", value: "cat-generic" }
+      - { label: "Danh mục (nhãn hiển thị)", name: "category", widget: "string", hint: "Ví dụ: Phân tích & Đo lường" }
       - { label: "Sản phẩm chủ đạo", name: "featured", widget: "boolean", default: false }
       - { label: "Ảnh thumbnail", name: "thumbnail", widget: "image" }
       - { label: "Alt text ảnh", name: "thumbnail_alt", widget: "string", default: "" }
