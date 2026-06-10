@@ -2005,6 +2005,7 @@
                     title: meta.title || slug,
                     short_description: meta.short_description || '',
                     category: meta.category || '',
+                    section: meta.section || 'cat-generic',
                     featured: meta.featured === 'true',
                     thumbnail: meta.thumbnail || '/images/default-product.jpg',
                     thumbnail_alt: meta.thumbnail_alt || meta.title || slug,
@@ -2018,7 +2019,7 @@
             }
         }
 
-        // Render trang sản phẩm động
+        // Render trang sản phẩm động - inject vào đúng section tĩnh
         async function renderProductsPage() {
             const slugs = await loadProductsIndex();
             const products = [];
@@ -2026,11 +2027,10 @@
                 const p = await loadProduct(slug);
                 if (p) products.push(p);
             }
-
-            const featured = products.filter(p => p.featured);
-            const others = products.filter(p => !p.featured);
+            if (!products.length) return;
 
             function productCard(p) {
+                // Sản phẩm dynamic dùng navigateToProduct, không có trang tĩnh
                 return '<div class="bg-tm-dark border border-tm-border hover:border-blue-500 transition group flex flex-col h-full">' +
                     '<div class="bg-white p-4 h-[200px] flex justify-center items-center overflow-hidden border-b border-tm-border">' +
                         '<img src="' + p.thumbnail + '" alt="' + p.thumbnail_alt + '" class="max-h-full object-contain group-hover:scale-105 transition-transform duration-500 text-gray-500 text-xs">' +
@@ -2038,38 +2038,52 @@
                     '<div class="p-6 flex flex-col flex-grow">' +
                         '<h3 class="text-lg font-bold text-white mb-2 leading-snug">' + p.title + '</h3>' +
                         '<p class="text-xs text-gray-400 mb-6 flex-grow">' + p.short_description + '</p>' +
-                        '<button onclick="navigate(\'product-' + p.slug + '\')" class="w-full text-center border border-white text-white px-4 py-2 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition">' +
+                        '<button onclick="navigateToProduct(\'' + p.slug + '\')" class="w-full text-center border border-white text-white px-4 py-2 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition">' +
                             'Xem thêm chi tiết' +
                         '</button>' +
                     '</div>' +
                 '</div>';
             }
 
-            // Render vào các grid section
-            const featuredGrid = document.getElementById('products-featured-grid');
-            if (featuredGrid && featured.length > 0) {
-                featuredGrid.innerHTML = featured.map(productCard).join('');
-            }
+            // Map section ID → grid ID trong HTML tĩnh
+            const sectionGridMap = {
+                'cat-chu-dao':    'dynamic-grid-cat-chu-dao',
+                'cat-phan-tich':  'dynamic-grid-cat-phan-tich',
+                'cat-thi-nghiem': 'dynamic-grid-cat-thi-nghiem',
+                'cat-phu-tro':    'dynamic-grid-cat-phu-tro',
+                'cat-vat-tu':     'dynamic-grid-cat-vat-tu',
+                'cat-generic':    'dynamic-grid-cat-generic',
+            };
 
-            // Render theo category vào grid tổng
-            const allGrid = document.getElementById('products-all-grid');
-            if (allGrid) {
-                // Group by category
-                const cats = {};
-                products.forEach(p => {
-                    if (!cats[p.category]) cats[p.category] = [];
-                    cats[p.category].push(p);
-                });
-                let html = '';
-                for (const [cat, items] of Object.entries(cats)) {
-                    html += '<div class="mb-16">' +
-                        '<h3 class="text-xl font-bold text-white mb-6 border-b border-tm-border pb-3">' + cat + '</h3>' +
-                        '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">' +
-                        items.map(productCard).join('') +
-                        '</div>' +
-                    '</div>';
-                                }
-                allGrid.innerHTML = html;
+            // Group sản phẩm theo section
+            const grouped = {};
+            products.forEach(p => {
+                const sec = p.section || 'cat-generic';
+                if (!grouped[sec]) grouped[sec] = [];
+                grouped[sec].push(p);
+            });
+
+            // Inject vào từng grid container
+            for (const [sec, items] of Object.entries(grouped)) {
+                const gridId = sectionGridMap[sec];
+                let grid = document.getElementById(gridId);
+                if (!grid) {
+                    // Tạo container động nếu chưa có
+                    const section = document.getElementById(sec);
+                    if (section) {
+                        const existingGrid = section.querySelector('.grid');
+                        if (existingGrid) {
+                            const wrapper = document.createElement('div');
+                            wrapper.id = gridId;
+                            wrapper.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-8';
+                            existingGrid.parentNode.insertBefore(wrapper, existingGrid.nextSibling);
+                            grid = wrapper;
+                        }
+                    }
+                }
+                if (grid) {
+                    grid.innerHTML = items.map(productCard).join('');
+                }
             }
         }
 
