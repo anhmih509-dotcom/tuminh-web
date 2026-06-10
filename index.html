@@ -1802,15 +1802,22 @@
             }
         }
 
-        // Fetch và parse file .md hoặc .json theo slug
+        // Fetch và parse file .txt theo slug
+        // .txt có thể là frontmatter (bài mới từ CMS) hoặc JSON (bài cũ)
         async function loadPost(slug) {
             if (postsCache[slug]) return postsCache[slug];
             try {
-                // Thử .md trước (bài mới từ CMS)
-                const resMd = await fetch('/posts/' + slug + '.md?t=' + Date.now());
-                if (resMd.ok) {
-                    const text = await resMd.text();
+                const res = await fetch('/posts/' + slug + '.txt?t=' + Date.now());
+                if (res.ok) {
+                    const text = await res.text();
                     if (!text.trim().startsWith('<!') && !text.trim().startsWith('<html')) {
+                        // Thử parse JSON trước (bài cũ)
+                        if (text.trim().startsWith('{')) {
+                            const data = JSON.parse(text);
+                            postsCache[slug] = data;
+                            return data;
+                        }
+                        // Parse frontmatter (bài mới từ CMS)
                         const { meta, body } = parseFrontmatter(text);
                         const post = {
                             slug: meta.slug || slug,
@@ -1824,16 +1831,6 @@
                         };
                         postsCache[slug] = post;
                         return post;
-                    }
-                }
-                // Fallback: thử .txt (bài cũ dạng JSON đổi sang .txt)
-                const resTxt = await fetch('/posts/' + slug + '.txt?t=' + Date.now());
-                if (resTxt.ok) {
-                    const text = await resTxt.text();
-                    if (!text.trim().startsWith('<!') && !text.trim().startsWith('<html')) {
-                        const data = JSON.parse(text);
-                        postsCache[slug] = data;
-                        return data;
                     }
                 }
                 throw new Error('Post not found: ' + slug);
