@@ -1783,13 +1783,18 @@
             return { meta, body: match[2].trim() };
         }
 
-        // Fetch danh sách slug từ manifest.md (1 slug mỗi dòng)
+        // Fetch danh sách bài viết qua GitHub API - tự động, không cần manifest
         async function loadPostsIndex() {
             try {
-                const res = await fetch('/posts/manifest.md?t=' + Date.now());
-                if (!res.ok) throw new Error('No manifest');
-                const text = await res.text();
-                const slugs = text.split('\n').map(s => s.trim()).filter(Boolean);
+                const res = await fetch('https://api.github.com/repos/anhmih509-dotcom/tuminh-web/contents/posts', {
+                    headers: { 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (!res.ok) throw new Error('GitHub API error');
+                const files = await res.json();
+                // Lấy các file .txt, bỏ manifest.md và index.json
+                const slugs = files
+                    .filter(f => f.name.endsWith('.txt') && f.name !== 'manifest.md')
+                    .map(f => f.name.replace('.txt', ''));
                 const posts = [];
                 for (const slug of slugs) {
                     const p = await loadPost(slug);
@@ -1797,8 +1802,20 @@
                 }
                 return posts;
             } catch(e) {
-                console.warn('manifest.md not found');
-                return null;
+                console.warn('GitHub API failed, falling back to manifest');
+                // Fallback về manifest.md nếu API lỗi
+                try {
+                    const res = await fetch('/posts/manifest.md?t=' + Date.now());
+                    if (!res.ok) return null;
+                    const text = await res.text();
+                    const slugs = text.split('\n').map(s => s.trim()).filter(Boolean);
+                    const posts = [];
+                    for (const slug of slugs) {
+                        const p = await loadPost(slug);
+                        if (p) posts.push(p);
+                    }
+                    return posts;
+                } catch(e2) { return null; }
             }
         }
 
