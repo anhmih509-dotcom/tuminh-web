@@ -159,6 +159,9 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: #2563eb
         <button class="btn" style="background:transparent;color:#9ca3af;border:1px solid #374151" onclick="closeEditor()">
           <i class="fa-solid fa-arrow-left"></i> Quay lại
         </button>
+        <button id="btn-delete" class="btn" style="background:transparent;color:#9ca3af;border:1px solid #374151;display:none" onclick="deleteCurrentFile()">
+          <i class="fa-solid fa-trash"></i> Xóa bài
+        </button>
         <div style="flex:1"></div>
         <span class="save-status" id="save-status"></span>
         <button class="btn btn-blue" id="btn-save" onclick="saveContent()">
@@ -369,8 +372,11 @@ async function loadList(section) {
           <div class="post-card-slug">${slug}</div>
           <div class="post-card-path">${folder}/${f.name}</div>
         </div>
-        <button class="btn btn-danger" onclick="event.stopPropagation();confirmDelete('${folder}/${f.name}','${f.sha}')">
-          <i class="fa-solid fa-trash"></i>
+        <button style="background:#1f1f1f;border:1px solid #374151;color:#9ca3af;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:4px" 
+          onmouseover="this.style.background='#7f1d1d';this.style.color='#fca5a5'"
+          onmouseout="this.style.background='#1f1f1f';this.style.color='#9ca3af'"
+          onclick="event.stopPropagation();confirmDelete('${folder}/${f.name}','${f.sha}')">
+          <i class="fa-solid fa-trash"></i> Xóa
         </button>
       </div>`;
     }).join('');
@@ -385,6 +391,7 @@ async function loadList(section) {
 async function openEditor(filePath, slug, sha) {
   showEditor();
   currentFile = { path: filePath, slug, sha, isNew: false };
+  document.getElementById('btn-delete').style.display = 'flex';
   setStatus('Đang tải...');
   try {
     const file = await getFile(filePath);
@@ -400,6 +407,7 @@ async function openEditor(filePath, slug, sha) {
 function openNew() {
   showEditor();
   currentFile = { path: null, slug: null, sha: null, isNew: true };
+  document.getElementById('btn-delete').style.display = 'none';
   renderMeta({});
   quill.root.innerHTML = '';
   setStatus('');
@@ -506,6 +514,19 @@ async function uploadThumbnail() {
     } catch(e) { setStatus('✗ Lỗi: ' + e.message, 'error'); }
   };
   input.click();
+}
+
+// ==========================================
+// DELETE CURRENT
+// ==========================================
+async function deleteCurrentFile() {
+  if (!currentFile || !currentFile.path) return;
+  if (!confirm('Xóa bài "' + currentFile.slug + '"? Không thể hoàn tác!')) return;
+  try {
+    const file = await getFile(currentFile.path);
+    await deleteFile(currentFile.path, file.sha);
+    closeEditor();
+  } catch(e) { setStatus('✗ Lỗi xóa: ' + e.message, 'error'); }
 }
 
 // ==========================================
