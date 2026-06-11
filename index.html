@@ -1933,17 +1933,8 @@
             // Render Markdown thành HTML nếu có marked.js, fallback plain text
             const bodyEl = document.getElementById('article-body');
             // Nếu body có thẻ HTML (bài cũ .json) thì inject thẳng ngay, không cần marked.js
-            const isHTML = /^\s*<[a-zA-Z]/i.test(post.body);
-            if (isHTML) {
-                bodyEl.innerHTML = post.body;
-            } else {
-                // Bài mới .md - cần marked.js để render Markdown
-                function renderBody() {
-                    if (!window.marked) { setTimeout(renderBody, 200); return; }
-                    bodyEl.innerHTML = window.marked.parse(post.body);
-                }
-                renderBody();
-            }
+            // Luôn inject HTML trực tiếp - Quill và JSON cũ đều lưu HTML
+            bodyEl.innerHTML = post.body || '';
 
             document.title = post.title + ' | Tứ Minh';
 
