@@ -1,12 +1,787 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="robots" content="noindex">
-  <title>Tứ Minh | CMS Admin</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tứ Minh | Admin</title>
+<meta name="robots" content="noindex">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- TipTap via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@tiptap/core@2.4.0/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tiptap/starter-kit@2.4.0/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tiptap/extension-color@2.4.0/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tiptap/extension-text-style@2.4.0/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tiptap/extension-underline@2.4.0/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tiptap/extension-text-align@2.4.0/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tiptap/extension-font-family@2.4.0/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tiptap/extension-image@2.4.0/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tiptap/extension-link@2.4.0/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tiptap/extension-table@2.4.0/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tiptap/extension-table-row@2.4.0/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tiptap/extension-table-cell@2.4.0/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tiptap/extension-table-header@2.4.0/dist/index.umd.min.js"></script>
+<style>
+  * { font-family: 'Inter', sans-serif; }
+  body { background: #0a0a0a; color: #d4d4d8; }
+  
+  .editor-content { min-height: 400px; outline: none; }
+  .editor-content p { margin-bottom: 0.75rem; }
+  .editor-content h1 { font-size: 2rem; font-weight: 700; margin: 1.5rem 0 0.75rem; }
+  .editor-content h2 { font-size: 1.5rem; font-weight: 700; margin: 1.5rem 0 0.75rem; }
+  .editor-content h3 { font-size: 1.25rem; font-weight: 600; margin: 1.25rem 0 0.5rem; }
+  .editor-content ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+  .editor-content ol { list-style: decimal; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+  .editor-content li { margin-bottom: 0.25rem; }
+  .editor-content blockquote { border-left: 4px solid #3b82f6; padding-left: 1rem; color: #9ca3af; margin: 1rem 0; font-style: italic; }
+  .editor-content a { color: #60a5fa; text-decoration: underline; }
+  .editor-content img { max-width: 100%; border-radius: 4px; margin: 0.5rem 0; }
+  .editor-content table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  .editor-content td, .editor-content th { border: 1px solid #374151; padding: 0.5rem 0.75rem; }
+  .editor-content th { background: #1f2937; font-weight: 600; }
+  .editor-content code { background: #1f2937; padding: 0.2rem 0.4rem; border-radius: 3px; font-family: monospace; font-size: 0.875rem; }
+  .editor-content pre { background: #1f2937; padding: 1rem; border-radius: 6px; overflow-x: auto; margin: 0.75rem 0; }
+
+  .toolbar-btn { padding: 0.35rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: all 0.15s; color: #9ca3af; }
+  .toolbar-btn:hover { background: #374151; color: white; }
+  .toolbar-btn.active { background: #2563eb; color: white; }
+  .toolbar-sep { width: 1px; background: #374151; margin: 0 4px; }
+  
+  .color-swatch { width: 20px; height: 20px; border-radius: 3px; cursor: pointer; border: 2px solid transparent; transition: border-color 0.15s; }
+  .color-swatch:hover { border-color: white; }
+
+  select.toolbar-select { background: #1f2937; color: #d4d4d8; border: 1px solid #374151; border-radius: 4px; padding: 0.25rem 0.5rem; font-size: 0.75rem; cursor: pointer; }
+  select.toolbar-select:focus { outline: none; border-color: #2563eb; }
+
+  input.form-input { background: #1a1a1a; border: 1px solid #374151; color: #d4d4d8; padding: 0.5rem 0.75rem; border-radius: 6px; width: 100%; font-size: 0.875rem; }
+  input.form-input:focus { outline: none; border-color: #2563eb; }
+  select.form-select { background: #1a1a1a; border: 1px solid #374151; color: #d4d4d8; padding: 0.5rem 0.75rem; border-radius: 6px; width: 100%; font-size: 0.875rem; }
+  select.form-select:focus { outline: none; border-color: #2563eb; }
+
+  .sidebar-item { padding: 0.6rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem; color: #9ca3af; transition: all 0.15s; display: flex; align-items: center; gap: 0.5rem; }
+  .sidebar-item:hover { background: #1f2937; color: white; }
+  .sidebar-item.active { background: #1e3a5f; color: #60a5fa; }
+
+  .post-card { background: #141414; border: 1px solid #262626; border-radius: 8px; padding: 1rem; cursor: pointer; transition: all 0.15s; }
+  .post-card:hover { border-color: #374151; background: #1a1a1a; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0a0a0a; }
+  ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
+</style>
 </head>
 <body>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+<!-- LOGIN SCREEN -->
+<div id="screen-login" class="min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-sm">
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 mb-4">
+        <div class="w-8 h-8 bg-white rounded flex items-center justify-center">
+          <span class="text-black font-bold text-xs">TM</span>
+        </div>
+        <span class="text-white font-bold text-lg tracking-widest uppercase">Tứ Minh</span>
+      </div>
+      <p class="text-gray-500 text-sm">Trang quản trị nội dung</p>
+    </div>
+    <div class="bg-[#141414] border border-[#262626] rounded-xl p-8">
+      <label class="block text-xs text-gray-400 uppercase tracking-widest mb-2">Mật khẩu</label>
+      <input type="password" id="login-password" class="form-input mb-4" placeholder="Nhập mật khẩu..." onkeydown="if(event.key==='Enter') doLogin()">
+      <div id="login-error" class="text-red-400 text-xs mb-3 hidden">Mật khẩu không đúng</div>
+      <button onclick="doLogin()" class="w-full bg-white text-black py-2.5 rounded-lg font-semibold text-sm hover:bg-gray-200 transition">
+        Đăng nhập
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="screen-app" class="hidden min-h-screen flex">
+
+  <!-- SIDEBAR -->
+  <div class="w-56 bg-[#0d0d0d] border-r border-[#1f1f1f] flex flex-col flex-shrink-0">
+    <div class="p-4 border-b border-[#1f1f1f]">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 bg-white rounded flex items-center justify-center">
+          <span class="text-black font-bold text-xs">TM</span>
+        </div>
+        <span class="text-white font-semibold text-sm">Admin</span>
+      </div>
+    </div>
+    <nav class="p-3 flex-1">
+      <p class="text-xs text-gray-600 uppercase tracking-widest px-2 mb-2 mt-1">Nội dung</p>
+      <div class="sidebar-item active" id="nav-posts" onclick="switchSection('posts')">
+        <i class="fa-solid fa-newspaper w-4"></i> Bài viết
+      </div>
+      <div class="sidebar-item" id="nav-products" onclick="switchSection('products')">
+        <i class="fa-solid fa-box w-4"></i> Sản phẩm
+      </div>
+      <p class="text-xs text-gray-600 uppercase tracking-widest px-2 mb-2 mt-4">Cài đặt</p>
+      <div class="sidebar-item" id="nav-settings" onclick="switchSection('settings')">
+        <i class="fa-solid fa-gear w-4"></i> Cài đặt Web
+      </div>
+    </nav>
+    <div class="p-3 border-t border-[#1f1f1f]">
+      <button onclick="doLogout()" class="sidebar-item w-full text-left">
+        <i class="fa-solid fa-right-from-bracket w-4"></i> Đăng xuất
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+
+    <!-- LIST VIEW -->
+    <div id="view-list" class="flex-1 overflow-auto p-6">
+      <div class="max-w-4xl mx-auto">
+        <div class="flex items-center justify-between mb-6">
+          <h1 id="list-title" class="text-xl font-bold text-white">Bài viết Tri Thức</h1>
+          <button onclick="openNewEditor()" class="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Tạo mới
+          </button>
+        </div>
+        <div id="list-container" class="space-y-3">
+          <div class="text-gray-500 text-sm text-center py-10">
+            <i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang tải...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDITOR VIEW -->
+    <div id="view-editor" class="hidden flex-1 flex flex-col overflow-hidden">
+      <!-- Editor Header -->
+      <div class="bg-[#0d0d0d] border-b border-[#1f1f1f] px-6 py-3 flex items-center gap-3">
+        <button onclick="closeEditor()" class="text-gray-400 hover:text-white transition text-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-arrow-left"></i> Quay lại
+        </button>
+        <div class="flex-1"></div>
+        <span id="save-status" class="text-xs text-gray-500"></span>
+        <button onclick="saveContent()" id="btn-save" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition flex items-center gap-2">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Lưu & Publish
+        </button>
+      </div>
+
+      <div class="flex-1 flex overflow-hidden">
+        <!-- Metadata Panel -->
+        <div class="w-64 bg-[#0d0d0d] border-r border-[#1f1f1f] overflow-auto p-4 flex-shrink-0">
+          <div id="meta-fields" class="space-y-4"></div>
+        </div>
+
+        <!-- Editor Area -->
+        <div class="flex-1 flex flex-col overflow-hidden bg-[#111]">
+          <!-- Toolbar -->
+          <div class="bg-[#0d0d0d] border-b border-[#1f1f1f] px-3 py-2 flex flex-wrap items-center gap-1 overflow-x-auto">
+            <!-- Heading -->
+            <select class="toolbar-select" onchange="setHeading(this.value)">
+              <option value="0">Đoạn văn</option>
+              <option value="1">Tiêu đề 1</option>
+              <option value="2">Tiêu đề 2</option>
+              <option value="3">Tiêu đề 3</option>
+            </select>
+            <div class="toolbar-sep h-5"></div>
+            <!-- Font size -->
+            <select class="toolbar-select" onchange="setFontSize(this.value)">
+              <option value="">Cỡ chữ</option>
+              <option value="12px">12</option>
+              <option value="14px">14</option>
+              <option value="16px">16</option>
+              <option value="18px">18</option>
+              <option value="20px">20</option>
+              <option value="24px">24</option>
+              <option value="28px">28</option>
+              <option value="32px">32</option>
+              <option value="36px">36</option>
+            </select>
+            <div class="toolbar-sep h-5"></div>
+            <!-- Bold Italic Underline Strike -->
+            <button class="toolbar-btn" onclick="editor.chain().focus().toggleBold().run()" title="In đậm (Ctrl+B)"><i class="fa-solid fa-bold"></i></button>
+            <button class="toolbar-btn" onclick="editor.chain().focus().toggleItalic().run()" title="In nghiêng (Ctrl+I)"><i class="fa-solid fa-italic"></i></button>
+            <button class="toolbar-btn" onclick="editor.chain().focus().toggleUnderline().run()" title="Gạch chân (Ctrl+U)"><i class="fa-solid fa-underline"></i></button>
+            <button class="toolbar-btn" onclick="editor.chain().focus().toggleStrike().run()" title="Gạch ngang"><i class="fa-solid fa-strikethrough"></i></button>
+            <div class="toolbar-sep h-5"></div>
+            <!-- Align -->
+            <button class="toolbar-btn" onclick="editor.chain().focus().setTextAlign('left').run()" title="Căn trái"><i class="fa-solid fa-align-left"></i></button>
+            <button class="toolbar-btn" onclick="editor.chain().focus().setTextAlign('center').run()" title="Căn giữa"><i class="fa-solid fa-align-center"></i></button>
+            <button class="toolbar-btn" onclick="editor.chain().focus().setTextAlign('right').run()" title="Căn phải"><i class="fa-solid fa-align-right"></i></button>
+            <button class="toolbar-btn" onclick="editor.chain().focus().setTextAlign('justify').run()" title="Căn đều"><i class="fa-solid fa-align-justify"></i></button>
+            <div class="toolbar-sep h-5"></div>
+            <!-- Lists -->
+            <button class="toolbar-btn" onclick="editor.chain().focus().toggleBulletList().run()" title="Danh sách"><i class="fa-solid fa-list-ul"></i></button>
+            <button class="toolbar-btn" onclick="editor.chain().focus().toggleOrderedList().run()" title="Danh sách đánh số"><i class="fa-solid fa-list-ol"></i></button>
+            <button class="toolbar-btn" onclick="editor.chain().focus().toggleBlockquote().run()" title="Trích dẫn"><i class="fa-solid fa-quote-left"></i></button>
+            <div class="toolbar-sep h-5"></div>
+            <!-- Color -->
+            <div class="relative group">
+              <button class="toolbar-btn flex items-center gap-1" title="Màu chữ">
+                <i class="fa-solid fa-font"></i>
+                <div id="current-color" class="w-3 h-1.5 rounded-sm bg-white"></div>
+              </button>
+              <div class="absolute top-full left-0 mt-1 bg-[#1a1a1a] border border-[#374151] rounded-lg p-3 hidden group-hover:grid grid-cols-8 gap-1.5 z-50 w-52 shadow-xl">
+                <!-- Basic colors -->
+                <div class="color-swatch" style="background:#ffffff" onclick="setColor('#ffffff')"></div>
+                <div class="color-swatch" style="background:#000000" onclick="setColor('#000000')"></div>
+                <div class="color-swatch" style="background:#ef4444" onclick="setColor('#ef4444')"></div>
+                <div class="color-swatch" style="background:#f97316" onclick="setColor('#f97316')"></div>
+                <div class="color-swatch" style="background:#eab308" onclick="setColor('#eab308')"></div>
+                <div class="color-swatch" style="background:#22c55e" onclick="setColor('#22c55e')"></div>
+                <div class="color-swatch" style="background:#3b82f6" onclick="setColor('#3b82f6')"></div>
+                <div class="color-swatch" style="background:#8b5cf6" onclick="setColor('#8b5cf6')"></div>
+                <div class="color-swatch" style="background:#ec4899" onclick="setColor('#ec4899')"></div>
+                <div class="color-swatch" style="background:#6b7280" onclick="setColor('#6b7280')"></div>
+                <div class="color-swatch" style="background:#fca5a5" onclick="setColor('#fca5a5')"></div>
+                <div class="color-swatch" style="background:#fdba74" onclick="setColor('#fdba74')"></div>
+                <div class="color-swatch" style="background:#fde047" onclick="setColor('#fde047')"></div>
+                <div class="color-swatch" style="background:#86efac" onclick="setColor('#86efac')"></div>
+                <div class="color-swatch" style="background:#93c5fd" onclick="setColor('#93c5fd')"></div>
+                <div class="color-swatch" style="background:#c4b5fd" onclick="setColor('#c4b5fd')"></div>
+                <!-- Custom color -->
+                <div class="col-span-8 mt-1 flex items-center gap-2">
+                  <input type="color" id="custom-color" class="w-6 h-6 cursor-pointer rounded border-0 bg-transparent" onchange="setColor(this.value)">
+                  <span class="text-xs text-gray-400">Màu tùy chỉnh</span>
+                </div>
+              </div>
+            </div>
+            <!-- Highlight -->
+            <div class="relative group">
+              <button class="toolbar-btn flex items-center gap-1" title="Tô nền">
+                <i class="fa-solid fa-highlighter"></i>
+              </button>
+              <div class="absolute top-full left-0 mt-1 bg-[#1a1a1a] border border-[#374151] rounded-lg p-3 hidden group-hover:grid grid-cols-8 gap-1.5 z-50 w-52 shadow-xl">
+                <div class="color-swatch" style="background:#fef08a" onclick="setHighlight('#fef08a')"></div>
+                <div class="color-swatch" style="background:#bbf7d0" onclick="setHighlight('#bbf7d0')"></div>
+                <div class="color-swatch" style="background:#bfdbfe" onclick="setHighlight('#bfdbfe')"></div>
+                <div class="color-swatch" style="background:#fecaca" onclick="setHighlight('#fecaca')"></div>
+                <div class="color-swatch" style="background:#e9d5ff" onclick="setHighlight('#e9d5ff')"></div>
+                <div class="color-swatch" style="background:#fed7aa" onclick="setHighlight('#fed7aa')"></div>
+                <div class="color-swatch" style="background:#ffffff" onclick="setHighlight('#ffffff')"></div>
+                <div class="color-swatch border border-gray-600" style="background:transparent" onclick="editor.chain().focus().unsetHighlight().run()" title="Xóa nền"><i class="fa-solid fa-xmark text-xs text-gray-400 flex items-center justify-center h-full w-full"></i></div>
+              </div>
+            </div>
+            <div class="toolbar-sep h-5"></div>
+            <!-- Link & Image & Table -->
+            <button class="toolbar-btn" onclick="insertLink()" title="Chèn liên kết"><i class="fa-solid fa-link"></i></button>
+            <button class="toolbar-btn" onclick="insertImage()" title="Chèn ảnh"><i class="fa-solid fa-image"></i></button>
+            <button class="toolbar-btn" onclick="insertTable()" title="Chèn bảng"><i class="fa-solid fa-table"></i></button>
+            <div class="toolbar-sep h-5"></div>
+            <!-- Code -->
+            <button class="toolbar-btn" onclick="editor.chain().focus().toggleCode().run()" title="Inline code"><i class="fa-solid fa-code"></i></button>
+            <button class="toolbar-btn" onclick="editor.chain().focus().toggleCodeBlock().run()" title="Code block"><i class="fa-solid fa-file-code"></i></button>
+            <div class="toolbar-sep h-5"></div>
+            <!-- Undo Redo -->
+            <button class="toolbar-btn" onclick="editor.chain().focus().undo().run()" title="Hoàn tác (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i></button>
+            <button class="toolbar-btn" onclick="editor.chain().focus().redo().run()" title="Làm lại (Ctrl+Y)"><i class="fa-solid fa-rotate-right"></i></button>
+          </div>
+
+          <!-- Content Editor -->
+          <div class="flex-1 overflow-auto p-6">
+            <div id="editor-container" class="editor-content max-w-3xl mx-auto text-[#d4d4d8] text-base leading-relaxed focus:outline-none min-h-[400px]"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ==========================================
+// CONFIG
+// ==========================================
+const GITHUB_TOKEN = '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';
+const REPO = 'anhmih509-dotcom/tuminh-web';
+const BRANCH = 'main';
+const PASSWORD = 'hg8045adhna1965'; // ← ĐỔI MẬT KHẨU TẠI ĐÂY
+
+// ==========================================
+// AUTH
+// ==========================================
+function doLogin() {
+  const pwd = document.getElementById('login-password').value;
+  if (pwd === PASSWORD) {
+    sessionStorage.setItem('tm-auth', '1');
+    document.getElementById('screen-login').classList.add('hidden');
+    document.getElementById('screen-app').classList.remove('hidden');
+    initApp();
+  } else {
+    document.getElementById('login-error').classList.remove('hidden');
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('tm-auth');
+  location.reload();
+}
+
+// Check if already logged in
+if (sessionStorage.getItem('tm-auth') === '1') {
+  document.getElementById('screen-login').classList.add('hidden');
+  document.getElementById('screen-app').classList.remove('hidden');
+}
+
+// ==========================================
+// STATE
+// ==========================================
+let editor = null;
+let currentSection = 'posts';
+let currentFile = null; // { path, slug, isNew }
+
+// ==========================================
+// GITHUB API
+// ==========================================
+async function ghFetch(path, options = {}) {
+  const res = await fetch('https://api.github.com/repos/' + REPO + path, {
+    ...options,
+    headers: {
+      'Authorization': 'Bearer ' + GITHUB_TOKEN,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  });
+  if (!res.ok) throw new Error('GitHub API error: ' + res.status);
+  return res.json();
+}
+
+async function listFiles(folder) {
+  return ghFetch('/contents/' + folder);
+}
+
+async function getFile(path) {
+  return ghFetch('/contents/' + path);
+}
+
+async function saveFile(path, content, sha = null) {
+  const body = {
+    message: sha ? 'Update ' + path : 'Create ' + path,
+    content: btoa(unescape(encodeURIComponent(content))),
+    branch: BRANCH
+  };
+  if (sha) body.sha = sha;
+  return ghFetch('/contents/' + path, { method: 'PUT', body: JSON.stringify(body) });
+}
+
+async function deleteFile(path, sha) {
+  return ghFetch('/contents/' + path, {
+    method: 'DELETE',
+    body: JSON.stringify({ message: 'Delete ' + path, sha, branch: BRANCH })
+  });
+}
+
+// ==========================================
+// APP INIT
+// ==========================================
+function initApp() {
+  initEditor();
+  loadList('posts');
+}
+
+// ==========================================
+// SECTION SWITCH
+// ==========================================
+function switchSection(section) {
+  currentSection = section;
+  ['posts','products','settings'].forEach(s => {
+    const el = document.getElementById('nav-' + s);
+    if (el) el.classList.toggle('active', s === section);
+  });
+  
+  const titles = { posts: 'Bài viết Tri Thức', products: 'Sản phẩm', settings: 'Cài đặt Website' };
+  document.getElementById('list-title').textContent = titles[section];
+  
+  closeEditor();
+  if (section === 'settings') {
+    loadSettings();
+  } else {
+    loadList(section);
+  }
+}
+
+// ==========================================
+// LIST VIEW
+// ==========================================
+async function loadList(section) {
+  const container = document.getElementById('list-container');
+  container.innerHTML = '<div class="text-gray-500 text-sm text-center py-10"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang tải...</div>';
+  
+  const folder = section === 'posts' ? 'posts' : 'products';
+  try {
+    const files = await listFiles(folder);
+    const items = files.filter(f => f.name.endsWith('.txt') && f.name !== 'manifest.md');
+    
+    if (!items.length) {
+      container.innerHTML = '<div class="text-gray-500 text-sm text-center py-10">Chưa có nội dung nào. Nhấn "Tạo mới" để bắt đầu.</div>';
+      return;
+    }
+
+    container.innerHTML = items.map(f => {
+      const slug = f.name.replace('.txt', '');
+      return `<div class="post-card flex items-center gap-4" onclick="openEditor('${folder}/${f.name}', '${slug}')">
+        <div class="flex-1">
+          <div class="text-white font-medium text-sm">${slug}</div>
+          <div class="text-gray-500 text-xs mt-0.5">${folder}/${f.name}</div>
+        </div>
+        <button onclick="event.stopPropagation(); confirmDelete('${folder}/${f.name}', '${f.sha}')" class="text-gray-600 hover:text-red-400 transition p-1">
+          <i class="fa-solid fa-trash text-xs"></i>
+        </button>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    container.innerHTML = '<div class="text-red-400 text-sm text-center py-10">Lỗi tải danh sách: ' + e.message + '</div>';
+  }
+}
+
+// ==========================================
+// EDITOR
+// ==========================================
+function initEditor() {
+  if (editor) return;
+  
+  // Load TipTap extensions
+  const { Editor } = tiptap;
+  const { StarterKit } = tiptapStarterKit;
+  const { Color } = tiptapColor;
+  const { TextStyle } = tiptapTextStyle;
+  const { Underline } = tiptapUnderline;
+  const { TextAlign } = tiptapTextAlign;
+  const { Image } = tiptapImage;
+  const { Link } = tiptapLink;
+  const { Table } = tiptapTable;
+  const { TableRow } = tiptapTableRow;
+  const { TableCell } = tiptapTableCell;
+  const { TableHeader } = tiptapTableHeader;
+
+  editor = new Editor({
+    element: document.getElementById('editor-container'),
+    extensions: [
+      StarterKit,
+      TextStyle,
+      Color,
+      Underline,
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Image.configure({ inline: false }),
+      Link.configure({ openOnClick: false }),
+      Table.configure({ resizable: true }),
+      TableRow, TableCell, TableHeader,
+    ],
+    content: '',
+    editorProps: {
+      attributes: { class: 'editor-content focus:outline-none' }
+    }
+  });
+}
+
+async function openEditor(filePath, slug) {
+  document.getElementById('view-list').classList.add('hidden');
+  document.getElementById('view-editor').classList.remove('hidden');
+  
+  currentFile = { path: filePath, slug, isNew: false, sha: null };
+  document.getElementById('save-status').textContent = 'Đang tải...';
+
+  try {
+    const file = await getFile(filePath);
+    currentFile.sha = file.sha;
+    const content = decodeURIComponent(escape(atob(file.content.replace(/\n/g,''))));
+    
+    // Parse frontmatter
+    const { meta, body } = parseFrontmatter(content);
+    renderMetaFields(meta);
+    
+    // Set editor content (HTML)
+    editor.commands.setContent(body || '');
+    document.getElementById('save-status').textContent = '';
+  } catch(e) {
+    document.getElementById('save-status').textContent = 'Lỗi: ' + e.message;
+  }
+}
+
+function openNewEditor() {
+  document.getElementById('view-list').classList.add('hidden');
+  document.getElementById('view-editor').classList.remove('hidden');
+  
+  currentFile = { path: null, slug: null, isNew: true, sha: null };
+  editor.commands.setContent('');
+  renderMetaFields({});
+  document.getElementById('save-status').textContent = '';
+}
+
+function closeEditor() {
+  document.getElementById('view-editor').classList.add('hidden');
+  document.getElementById('view-list').classList.remove('hidden');
+  currentFile = null;
+}
+
+// ==========================================
+// META FIELDS
+// ==========================================
+function renderMetaFields(meta) {
+  const container = document.getElementById('meta-fields');
+  const section = currentSection;
+  
+  let fields = '';
+  
+  if (section === 'posts') {
+    fields = `
+      <div>
+        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-1.5">Slug (URL)</label>
+        <input class="form-input" id="meta-slug" value="${meta.slug || ''}" placeholder="ten-bai-viet">
+        <p class="text-xs text-gray-600 mt-1">Chỉ dùng chữ thường, số, dấu gạch ngang</p>
+      </div>
+      <div>
+        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-1.5">Tiêu đề</label>
+        <input class="form-input" id="meta-title" value="${meta.title || ''}" placeholder="Tiêu đề bài viết">
+      </div>
+      <div>
+        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-1.5">Danh mục</label>
+        <select class="form-select" id="meta-category">
+          <option ${meta.category==='Kinh nghiệm Đúc'?'selected':''}>Kinh nghiệm Đúc</option>
+          <option ${meta.category==='Công nghệ Luyện kim'?'selected':''}>Công nghệ Luyện kim</option>
+          <option ${meta.category==='Thiết bị & Đo lường'?'selected':''}>Thiết bị & Đo lường</option>
+          <option ${meta.category==='Tin tức'?'selected':''}>Tin tức</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-1.5">Tóm tắt</label>
+        <textarea class="form-input h-20 resize-none" id="meta-summary" placeholder="Mô tả ngắn...">${meta.summary || ''}</textarea>
+      </div>
+      <div>
+        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-1.5">URL Ảnh thumbnail</label>
+        <input class="form-input" id="meta-thumbnail" value="${meta.thumbnail || ''}" placeholder="/images/ten-anh.jpg">
+      </div>
+      <div>
+        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-1.5">Thời gian đọc</label>
+        <input class="form-input" id="meta-read_time" value="${meta.read_time || '5 phút đọc'}">
+      </div>
+    `;
+  } else if (section === 'products') {
+    fields = `
+      <div>
+        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-1.5">Slug (URL)</label>
+        <input class="form-input" id="meta-slug" value="${meta.slug || ''}" placeholder="ten-san-pham">
+      </div>
+      <div>
+        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-1.5">Tên sản phẩm</label>
+        <input class="form-input" id="meta-title" value="${meta.title || ''}" placeholder="Tên sản phẩm">
+      </div>
+      <div>
+        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-1.5">Mô tả ngắn</label>
+        <textarea class="form-input h-20 resize-none" id="meta-short_description" placeholder="Mô tả ngắn...">${meta.short_description || ''}</textarea>
+      </div>
+      <div>
+        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-1.5">Danh mục hiển thị</label>
+        <select class="form-select" id="meta-section">
+          <option value="cat-chu-dao" ${meta.section==='cat-chu-dao'?'selected':''}>⭐ Sản phẩm Chủ Đạo</option>
+          <option value="cat-phan-tich" ${meta.section==='cat-phan-tich'?'selected':''}>1. Phân tích & Đo lường</option>
+          <option value="cat-thi-nghiem" ${meta.section==='cat-thi-nghiem'?'selected':''}>2. Thí nghiệm Cát đúc</option>
+          <option value="cat-phu-tro" ${meta.section==='cat-phu-tro'?'selected':''}>3. Phụ trợ & Gia công</option>
+          <option value="cat-vat-tu" ${meta.section==='cat-vat-tu'?'selected':''}>4. Vật tư & Phụ tùng</option>
+          <option value="cat-generic" ${meta.section==='cat-generic'?'selected':''}>5. Danh mục Tổng hợp</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-1.5">URL Ảnh thumbnail</label>
+        <input class="form-input" id="meta-thumbnail" value="${meta.thumbnail || ''}" placeholder="/images/ten-anh.jpg">
+      </div>
+      <div>
+        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-1.5">Alt text ảnh</label>
+        <input class="form-input" id="meta-thumbnail_alt" value="${meta.thumbnail_alt || ''}" placeholder="Mô tả ảnh">
+      </div>
+      <div class="flex items-center gap-2">
+        <input type="checkbox" id="meta-featured" ${meta.featured==='true'?'checked':''} class="w-4 h-4 accent-blue-500">
+        <label for="meta-featured" class="text-sm text-gray-300">Sản phẩm chủ đạo</label>
+      </div>
+    `;
+  }
+  
+  container.innerHTML = fields;
+}
+
+function collectMeta() {
+  const meta = {};
+  container = document.getElementById('meta-fields');
+  container.querySelectorAll('[id^="meta-"]').forEach(el => {
+    const key = el.id.replace('meta-', '');
+    if (el.type === 'checkbox') meta[key] = el.checked ? 'true' : 'false';
+    else meta[key] = el.value;
+  });
+  return meta;
+}
+
+// ==========================================
+// SAVE
+// ==========================================
+async function saveContent() {
+  const btn = document.getElementById('btn-save');
+  const status = document.getElementById('save-status');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...';
+  status.textContent = '';
+
+  try {
+    const meta = collectMeta();
+    const slug = meta.slug || currentFile.slug;
+    
+    if (!slug) {
+      alert('Vui lòng nhập Slug!');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Lưu & Publish';
+      return;
+    }
+
+    const body = editor.getHTML();
+    const folder = currentSection === 'posts' ? 'posts' : 'products';
+    const filePath = folder + '/' + slug + '.txt';
+
+    // Build frontmatter
+    let frontmatter = '---\n';
+    Object.entries(meta).forEach(([k, v]) => {
+      frontmatter += k + ': ' + v + '\n';
+    });
+    frontmatter += '---\n\n' + body;
+
+    await saveFile(filePath, frontmatter, currentFile.sha || null);
+    
+    currentFile.path = filePath;
+    currentFile.slug = slug;
+    currentFile.isNew = false;
+    
+    // Refresh SHA
+    const updated = await getFile(filePath);
+    currentFile.sha = updated.sha;
+
+    status.textContent = '✓ Đã lưu ' + new Date().toLocaleTimeString('vi-VN');
+    btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Lưu & Publish';
+    btn.disabled = false;
+  } catch(e) {
+    status.textContent = '✗ Lỗi: ' + e.message;
+    btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Lưu & Publish';
+    btn.disabled = false;
+  }
+}
+
+// ==========================================
+// DELETE
+// ==========================================
+async function confirmDelete(path, sha) {
+  if (!confirm('Xóa file này?\n' + path)) return;
+  try {
+    await deleteFile(path, sha);
+    loadList(currentSection);
+  } catch(e) {
+    alert('Lỗi xóa: ' + e.message);
+  }
+}
+
+// ==========================================
+// SETTINGS
+// ==========================================
+async function loadSettings() {
+  const container = document.getElementById('list-container');
+  container.innerHTML = '<div class="text-gray-500 text-sm text-center py-10"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang tải...</div>';
+  
+  try {
+    const file = await getFile('settings/site.md');
+    const content = decodeURIComponent(escape(atob(file.content.replace(/\n/g,''))));
+    const { meta } = parseFrontmatter(content);
+    
+    container.innerHTML = `
+      <div class="max-w-xl space-y-4">
+        <h2 class="text-white font-semibold mb-4">Thông tin chung</h2>
+        ${Object.entries(meta).map(([k, v]) => `
+          <div>
+            <label class="block text-xs text-gray-400 uppercase tracking-widest mb-1.5">${k}</label>
+            <input class="form-input" id="setting-${k}" value="${v}">
+          </div>
+        `).join('')}
+        <button onclick="saveSettings('${file.sha}')" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition mt-2">
+          <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Lưu cài đặt
+        </button>
+      </div>
+    `;
+  } catch(e) {
+    container.innerHTML = '<div class="text-red-400 text-sm">Lỗi: ' + e.message + '</div>';
+  }
+}
+
+async function saveSettings(sha) {
+  try {
+    const fields = {};
+    document.querySelectorAll('[id^="setting-"]').forEach(el => {
+      fields[el.id.replace('setting-', '')] = el.value;
+    });
+    let content = '---\n';
+    Object.entries(fields).forEach(([k,v]) => content += k + ': ' + v + '\n');
+    content += '---\n';
+    await saveFile('settings/site.md', content, sha);
+    alert('Đã lưu cài đặt!');
+  } catch(e) {
+    alert('Lỗi: ' + e.message);
+  }
+}
+
+// ==========================================
+// PARSE FRONTMATTER
+// ==========================================
+function parseFrontmatter(text) {
+  text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const match = text.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  if (!match) return { meta: {}, body: text };
+  const meta = {};
+  match[1].split('\n').forEach(line => {
+    const idx = line.indexOf(':');
+    if (idx === -1) return;
+    const key = line.slice(0, idx).trim();
+    const val = line.slice(idx + 1).trim().replace(/^["']|["']$/g, '');
+    meta[key] = val;
+  });
+  return { meta, body: match[2].trim() };
+}
+
+// ==========================================
+// TOOLBAR ACTIONS
+// ==========================================
+function setHeading(level) {
+  if (level === '0') editor.chain().focus().setParagraph().run();
+  else editor.chain().focus().setHeading({ level: parseInt(level) }).run();
+}
+
+function setFontSize(size) {
+  if (!size) return;
+  editor.chain().focus().setMark('textStyle', { fontSize: size }).run();
+}
+
+function setColor(color) {
+  editor.chain().focus().setColor(color).run();
+  document.getElementById('current-color').style.background = color;
+}
+
+function setHighlight(color) {
+  editor.chain().focus().setMark('textStyle', { backgroundColor: color }).run();
+}
+
+function insertLink() {
+  const url = prompt('Nhập URL:');
+  if (url) editor.chain().focus().setLink({ href: url }).run();
+}
+
+function insertImage() {
+  const url = prompt('Nhập URL ảnh:');
+  if (url) editor.chain().focus().setImage({ src: url }).run();
+}
+
+function insertTable() {
+  editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+}
+
+// ==========================================
+// INIT
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('tm-auth') === '1') {
+    initApp();
+  }
+});
+</script>
 </body>
 </html>
