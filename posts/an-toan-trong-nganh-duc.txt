@@ -10,9 +10,9 @@ read_time: 5 phút đọc
 
 <p><em>*Trong môi trường xưởng đúc, những người thợ phải đối mặt với vô vàn nguy hiểm mỗi ngày để tạo ra những mẻ kim loại đạt chuẩn. Việc chỉ dựa vào kinh nghiệm là không đủ, chúng ta cần nhìn thẳng vào những rủi ro cốt lõi:*</em>
 
-![](/images/uploads/701437366_122184281684869319_2682104964238356395_n.jpg)
+<img src="/images/uploads/1781163304252-701437366-122184281684869319-2682104964238356395-n.jpg">
 
-🔥 <strong>**Nguy cơ bỏng &amp; Chấn thương nhiệt**:</strong> Kim loại nóng chảy ở hàng ngàn độ C. Chỉ một chút hơi ẩm hoặc nước tiếp xúc cũng có thể gây ra hiện tượng bốc hơi tức thì và dẫn đến những vụ nổ dữ dội.
+🔥 <strong>**Nguy cơ bỏng &amp; Chấn thương nhiệt**:</strong> Kim loại nóng<img src="/images/uploads/1781163295956-701437366-122184281684869319-2682104964238356395-n.jpg"> chảy ở hàng ngàn độ C. Chỉ một chút hơi ẩm hoặc nước tiếp xúc cũng có thể gây ra hiện tượng bốc hơi tức thì và dẫn đến những vụ nổ dữ dội.
 
 <strong>**☠️ Nhiễm độc &amp; Bụi mịn hô hấp:** </strong>Hóa chất xử lý, dung môi và bụi mịn từ quá trình làm khuôn/dỡ khuôn có thể tàn phá hệ hô hấp nếu hít phải trong thời gian dài.
 
