@@ -34,6 +34,39 @@
 
     <!-- Tích hợp Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.7/quill.core.css" rel="stylesheet">
+    <style>
+      /* Article body styles */
+      #article-body p, #product-detail-body p { margin-bottom: 0.85rem; line-height: 1.75; }
+      #article-body h1, #product-detail-body h1 { font-size: 2rem; font-weight: 700; color: white; margin: 1.5rem 0 0.75rem; }
+      #article-body h2, #product-detail-body h2 { font-size: 1.5rem; font-weight: 700; color: white; margin: 1.5rem 0 0.75rem; }
+      #article-body h3, #product-detail-body h3 { font-size: 1.2rem; font-weight: 600; color: white; margin: 1.25rem 0 0.5rem; }
+      #article-body strong, #product-detail-body strong { color: white; font-weight: 700; }
+      #article-body em, #product-detail-body em { font-style: italic; }
+      #article-body u, #product-detail-body u { text-decoration: underline; }
+      #article-body ul, #product-detail-body ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+      #article-body ol, #product-detail-body ol { list-style: decimal; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+      #article-body li, #product-detail-body li { margin-bottom: 0.35rem; }
+      #article-body blockquote, #product-detail-body blockquote { border-left: 4px solid #3b82f6; padding-left: 1rem; color: #9ca3af; margin: 1rem 0; font-style: italic; }
+      #article-body img, #product-detail-body img { max-width: 100%; border-radius: 6px; margin: 0.75rem 0; }
+      #article-body a, #product-detail-body a { color: #60a5fa; text-decoration: underline; }
+      #article-body table, #product-detail-body table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+      #article-body td, #article-body th, #product-detail-body td, #product-detail-body th { border: 1px solid #374151; padding: 0.5rem 0.75rem; }
+      #article-body th, #product-detail-body th { background: #1f2937; font-weight: 600; color: white; }
+      /* Quill size classes */
+      .ql-size-small { font-size: 0.75rem; }
+      .ql-size-large { font-size: 1.25rem; }
+      .ql-size-huge  { font-size: 1.75rem; }
+      /* Quill align classes */
+      .ql-align-center { text-align: center; }
+      .ql-align-right  { text-align: right; }
+      .ql-align-justify { text-align: justify; }
+      /* Quill indent */
+      .ql-indent-1 { padding-left: 2rem; }
+      .ql-indent-2 { padding-left: 4rem; }
+      .ql-indent-3 { padding-left: 6rem; }
+    </style>
     <!-- Netlify Identity Widget: xử lý link mời & đặt mật khẩu -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <script>
@@ -1757,13 +1790,6 @@
         // HỆ THỐNG TRI THỨC ĐỘNG - ĐỌC FILE .md TỪ /posts/
         // ==========================================
 
-        // Thêm thư viện parse Markdown (marked.js) và frontmatter
-        (function() {
-            const s = document.createElement('script');
-            s.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
-            document.head.appendChild(s);
-        })();
-
         var postsCache = {};
 
         // Parse frontmatter từ nội dung .md
@@ -1936,17 +1962,7 @@
             // Smart render: HTML inject trực tiếp, Markdown thì parse
             const body = post.body || '';
             const isHTML = /<(p|h[1-6]|ul|ol|li|div|strong|em|img|figure|table|blockquote)[\s>]/i.test(body);
-            if (isHTML) {
-                bodyEl.innerHTML = body;
-            } else if (window.marked) {
-                bodyEl.innerHTML = window.marked.parse(body);
-            } else {
-                // Load marked rồi render
-                const s = document.createElement('script');
-                s.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
-                s.onload = () => { bodyEl.innerHTML = window.marked.parse(body); };
-                document.head.appendChild(s);
-            }
+            bodyEl.innerHTML = isHTML ? body : window.marked.parse(body);
 
             document.title = post.title + ' | Tứ Minh';
 
