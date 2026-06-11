@@ -1933,8 +1933,20 @@
             // Render Markdown thành HTML nếu có marked.js, fallback plain text
             const bodyEl = document.getElementById('article-body');
             // Nếu body có thẻ HTML (bài cũ .json) thì inject thẳng ngay, không cần marked.js
-            // Luôn inject HTML trực tiếp - Quill và JSON cũ đều lưu HTML
-            bodyEl.innerHTML = post.body || '';
+            // Smart render: HTML inject trực tiếp, Markdown thì parse
+            const body = post.body || '';
+            const isHTML = /<(p|h[1-6]|ul|ol|li|div|strong|em|img|figure|table|blockquote)[\s>]/i.test(body);
+            if (isHTML) {
+                bodyEl.innerHTML = body;
+            } else if (window.marked) {
+                bodyEl.innerHTML = window.marked.parse(body);
+            } else {
+                // Load marked rồi render
+                const s = document.createElement('script');
+                s.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+                s.onload = () => { bodyEl.innerHTML = window.marked.parse(body); };
+                document.head.appendChild(s);
+            }
 
             document.title = post.title + ' | Tứ Minh';
 
