@@ -1,21 +1,16 @@
-# ====================================================================
-# 1. ĐIỀU HƯỚNG 1-KÈM-1: GIỮ NGUYÊN ĐIỂM SEO TỪ WEB CŨ (MÃ 301)
-# ====================================================================
-/vn/Dich-vu-San-pham/May-do-nhiet-do-Kim-loai-long-Cap-nhiet-nhung-nhieu-lan-khong-gay-no.aspx        /san-pham-thiet-bi/may-do-nhiet-do-kim-loai-long    301
-/vn/Dich-vu-San-pham/May-CE-Coc-CE-coc-thu-duong-luong-cac-bon-C-Si.aspx                              /san-pham-thiet-bi/coc-mau                          301
-/vn/Dich-vu-San-pham/May-cua-dung-khi-nen.aspx                                                        /san-pham-thiet-bi/may-cua-khi-nen                  301
-/vn/Dich-vu-San-pham/May-mai-trong-may-mai-bang-May-mai-lac-may-mai-lo-sau-cam-tay.aspx               /san-pham-thiet-bi/may-mai-cam-tay                  301
-/vn/Dich-vu-San-pham/DEM-CHONG-RUNG-GIAM-CHAN.aspx                                                    /san-pham-thiet-bi/dem-chong-rung                   301
-/vn/Dich-vu-San-pham/DAM-KHI-NEN-DAM-CAT-DAM-HOI.aspx                                                /san-pham-thiet-bi/dam-khi-nen                      301
-/vn/*                                                                                                  /san-pham-thiet-bi                                  301
+# 1. REDIRECT URL CŨ (301)
+/vn/Dich-vu-San-pham/May-do-nhiet-do-Kim-loai-long-Cap-nhiet-nhung-nhieu-lan-khong-gay-no.aspx   /san-pham-thiet-bi/may-do-nhiet-do-kim-loai-long   301
+/vn/Dich-vu-San-pham/May-CE-Coc-CE-coc-thu-duong-luong-cac-bon-C-Si.aspx                         /san-pham-thiet-bi/coc-mau                          301
+/vn/Dich-vu-San-pham/May-cua-dung-khi-nen.aspx                                                   /san-pham-thiet-bi/may-cua-khi-nen                  301
+/vn/Dich-vu-San-pham/May-mai-trong-may-mai-bang-May-mai-lac-may-mai-lo-sau-cam-tay.aspx          /san-pham-thiet-bi/may-mai-cam-tay                  301
+/vn/Dich-vu-San-pham/DEM-CHONG-RUNG-GIAM-CHAN.aspx                                               /san-pham-thiet-bi/dem-chong-rung                   301
+/vn/Dich-vu-San-pham/DAM-KHI-NEN-DAM-CAT-DAM-HOI.aspx                                           /san-pham-thiet-bi/dam-khi-nen                      301
+/vn/*                                                                                             /san-pham-thiet-bi                                  301
 
-# ====================================================================
-# 2. ĐỊNH TUYẾN SPA (MÃ 200)
-# ====================================================================
-/trang-chu                                              /index.html   200
-/gioi-thieu                                             /index.html   200
-/tu-van                                                 /index.html   200
-/san-pham-thiet-bi                                      /index.html   200
-/san-pham-thiet-bi/*                                    /index.html   200
-/tri-thuc                                               /index.html   200
-/tri-thuc/*                                             /index.html   200
+# 2. SPA ROUTING
+/trang-chu          /index.html   200
+/gioi-thieu         /index.html   200
+/tu-van             /index.html   200
+/san-pham-thiet-bi  /index.html   200
+/tri-thuc           /index.html   200
+/tri-thuc/*         /index.html   200
