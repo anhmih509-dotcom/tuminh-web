@@ -2217,17 +2217,64 @@
                 'about': 'Giới Thiệu | Công ty TNHH Tứ Minh',
                 'consulting': 'Dịch Vụ Tư Vấn Thiết Bị Luyện Kim | Tứ Minh',
                 'products': 'Giải Pháp & Thiết Bị Luyện Kim | Tứ Minh',
-                'product-may-do-nhiet-do-kim-loai-long': 'Máy Đo Nhiệt Độ Kim Loại Lỏng | Thiết Bị Tứ Minh',
-                'product-dam-khi-nen': 'Đầm Khí Nén D-Series | Thiết Bị Tứ Minh',
-                'product-cap-nhiet-dien': 'Cặp Nhiệt Điện & Cảm Biến Đo Nhiệt | Tứ Minh',
-                'product-coc-mau': 'Cốc Mẫu Đo Nhiệt Metacup, Cốc CE | Tứ Minh',
-                'product-dem-chong-rung': 'Đệm Chân Máy Chống Rung, Giảm Chấn Công Nghiệp | Tứ Minh',
-                'product-may-cua-khi-nen': 'Máy Cưa Khí Nén Phòng Nổ | Thiết Bị Tứ Minh',
-                'product-may-mai-cam-tay': 'Máy Mài Khí Nén Cầm Tay | Lỗ Sâu, Khuôn Mẫu, Tịnh Tiến | Tứ Minh',
+                'product-may-do-nhiet-do-kim-loai-long': 'Máy Đo Nhiệt Độ Kim Loại Lỏng, Gang Thép AJAY SYSCON | Tứ Minh',
+                'product-dam-khi-nen': 'Đầm Khí Nén D-Series Xưởng Đúc D4, D6, D9 | Tứ Minh',
+                'product-cap-nhiet-dien': 'Cặp Nhiệt Điện BMD, Thermotip, Minitip Đo Kim Loại Lỏng | Tứ Minh',
+                'product-coc-mau': 'Cốc Mẫu CE Metacup Đo Đương Lượng Carbon Gang Đúc | Tứ Minh',
+                'product-dem-chong-rung': 'Đệm Chân Máy Chống Rung Giảm Chấn Công Nghiệp | Tứ Minh',
+                'product-may-cua-khi-nen': 'Máy Cưa Khí Nén Phòng Nổ Ngành Mỏ, Hầm Lò | Tứ Minh',
+                'product-may-mai-cam-tay': 'Máy Mài Khí Nén Cầm Tay Lỗ Sâu, Khuôn Mẫu | Tứ Minh',
                 'knowledge': 'Tri Thức Công Nghiệp & Luyện Kim | Tứ Minh'
             };
+
+            const descriptionMap = {
+                'home': 'Tứ Minh – hơn 20 năm tư vấn và cung cấp thiết bị ngành đúc, luyện kim: máy đo nhiệt độ kim loại lỏng, cặp nhiệt điện, đầm khí nén, cốc mẫu CE. Sourcing toàn cầu, lắp đặt trọn gói.',
+                'about': 'Công ty TNHH Tứ Minh – đối tác tư vấn và cung ứng thiết bị công nghiệp đúc, luyện kim từ năm 2005. Mạng lưới đối tác tại Đức, Nhật Bản, Ý, Trung Quốc, Nga.',
+                'consulting': 'Tứ Minh cung cấp dịch vụ tư vấn công nghệ sản xuất, sourcing thiết bị toàn cầu, nhập khẩu và lắp đặt dây chuyền đúc luyện kim trọn gói từ A đến Z.',
+                'products': 'Danh mục thiết bị đúc và luyện kim của Tứ Minh: máy đo nhiệt độ kim loại lỏng, đầm khí nén, cặp nhiệt điện, cốc mẫu CE, máy mài khí nén, máy cưa phòng nổ.',
+                'product-may-do-nhiet-do-kim-loai-long': 'Máy đo nhiệt độ kim loại lỏng AJAY SYSCON Tempstick 529 chuyên dụng lò trung tần, lò điện hồ quang. Tương thích BMD, Thermotip, Minitip. Chính xác ±1°C. Giao hàng toàn quốc.',
+                'product-dam-khi-nen': 'Đầm khí nén D-Series (D4, D6, D9) chuyên dụng đầm khuôn cát, lò thép, khuôn thao. Trọng lượng 4–9.5kg, áp suất 0.63 MPa. Nhập khẩu chính hãng, bảo hành dài hạn.',
+                'product-cap-nhiet-dien': 'Cung cấp cặp nhiệt điện BMD tái sử dụng 6–8 lần, Minitip và Thermotip dùng một lần. Đo nhiệt độ gang thép lỏng chính xác ±1°C, dải đo 540°C–1750°C.',
+                'product-coc-mau': 'Cốc mẫu Metacup-CE, Metacup-C (có Teluri), Metacup-HC cho gang CE cao. Xác định chính xác %CE, %C, %Si trong gang đúc lỏng. Vật tư tiêu hao nhập khẩu chính hãng.',
+                'product-dem-chong-rung': 'Đệm chân máy chống rung, giảm chấn công nghiệp – không cần bu lông neo. Cân bằng máy siêu tốc, triệt tiêu rung lắc, bền với dầu mỡ công nghiệp. Nhiều model tải trọng.',
+                'product-may-cua-khi-nen': 'Máy cưa khí nén phòng nổ chuyên dụng ngành mỏ, hầm lò: Đài Loan, Cengar (UK), Đức, JSZ. Không phát sinh tia lửa điện. Cắt ống Ø lên đến 700mm.',
+                'product-may-mai-cam-tay': 'Máy mài khí nén cầm tay S-Series lỗ sâu, dạng bút, mài khuôn mẫu WS-613-2 và mài nghiền UTR/US. Tốc độ 17.500–35.000 v/p. An toàn chống cháy nổ.',
+                'knowledge': 'Kiến thức chuyên sâu về công nghệ luyện kim, đúc gang thép: hướng dẫn đo nhiệt độ kim loại lỏng, kinh nghiệm xử lý khuyết tật vật đúc từ chuyên gia Tứ Minh.'
+            };
+
+            const schemaImageMap = {
+                'product-may-do-nhiet-do-kim-loai-long': 'https://tuminh.com.vn/images/TEMPSTICK%20529.jpg',
+                'product-dam-khi-nen': 'https://tuminh.com.vn/images/dam-khi-nen.JPG',
+                'product-cap-nhiet-dien': 'https://tuminh.com.vn/images/cap-nhiet-dien.JPG',
+                'product-coc-mau': 'https://tuminh.com.vn/images/coc-mau.JPG',
+                'product-dem-chong-rung': 'https://tuminh.com.vn/images/dem-chong-rung-cover.jpg',
+                'product-may-cua-khi-nen': 'https://tuminh.com.vn/images/may-cua-khi-nen-1.jpg',
+                'product-may-mai-cam-tay': 'https://tuminh.com.vn/images/may-mai-tong-hop.jpg'
+            };
+
             if (!customPath) {
+                // Cập nhật title
                 document.title = titleMap[pageId] || 'Tứ Minh | Thiết Bị Đúc & Giải Pháp Luyện Kim Toàn Diện';
+
+                // Cập nhật meta description
+                const metaDesc = document.querySelector('meta[name="description"]');
+                if (metaDesc) {
+                    metaDesc.setAttribute('content', descriptionMap[pageId] || descriptionMap['home']);
+                }
+
+                // Cập nhật Schema JSON-LD
+                const schemaTag = document.querySelector('script[type="application/ld+json"]');
+                if (schemaTag) {
+                    try {
+                        const schemaData = JSON.parse(schemaTag.textContent);
+                        schemaData.name = titleMap[pageId] || schemaData.name;
+                        schemaData.description = descriptionMap[pageId] || descriptionMap['home'];
+                        if (schemaImageMap[pageId]) {
+                            schemaData.image = schemaImageMap[pageId];
+                        }
+                        schemaTag.textContent = JSON.stringify(schemaData);
+                    } catch(e) { /* schema parse error – bỏ qua */ }
+                }
             }
 
             if (pushToHistory) {
