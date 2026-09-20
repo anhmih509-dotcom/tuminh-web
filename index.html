@@ -140,6 +140,84 @@
             -ms-user-select: none; /* IE10+/Edge */
             user-select: none; /* Chuẩn chung */
         }
+
+        /* ==========================================
+           DANH MỤC SẢN PHẨM SIDEBAR
+        ========================================== */
+        .product-page-layout {
+            display: flex;
+            gap: 0;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0;
+            align-items: flex-start;
+        }
+        .product-sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 96px;
+            max-height: calc(100vh - 110px);
+            overflow-y: auto;
+            border-right: 1px solid #27272a;
+            padding: 24px 0;
+            background: #111111;
+        }
+        .product-sidebar::-webkit-scrollbar { width: 4px; }
+        .product-sidebar::-webkit-scrollbar-track { background: #111; }
+        .product-sidebar::-webkit-scrollbar-thumb { background: #27272a; border-radius: 2px; }
+        .product-sidebar-title {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #ffffff;
+            padding: 0 20px 12px;
+            border-bottom: 1px solid #27272a;
+            margin-bottom: 8px;
+            background: #1a3a5c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .product-sidebar-item {
+            display: block;
+            padding: 10px 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #9ca3af;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 2px solid transparent;
+            text-decoration: none;
+            line-height: 1.4;
+        }
+        .product-sidebar-item:hover {
+            color: #ffffff;
+            background: rgba(255,255,255,0.04);
+            border-left-color: #3b82f6;
+        }
+        .product-sidebar-item.active {
+            color: #60a5fa;
+            background: rgba(59,130,246,0.08);
+            border-left-color: #3b82f6;
+            font-weight: 600;
+        }
+        .product-sidebar-item.no-page {
+            color: #6b7280;
+        }
+        .product-sidebar-item.no-page:hover {
+            color: #9ca3af;
+            border-left-color: #6b7280;
+        }
+        .product-content-area {
+            flex: 1;
+            min-width: 0;
+        }
+        @media (max-width: 1024px) {
+            .product-sidebar { display: none; }
+            .product-page-layout { display: block; }
+        }
     </style>
 </head>
 <body class="antialiased relative">
@@ -2104,6 +2182,17 @@
                     grid.innerHTML = items.map(productCard).join('');
                 }
             }
+
+            // Sau khi render xong, scroll tới section nếu có yêu cầu từ sidebar
+            if (window._pendingScrollSection) {
+                const target = document.getElementById(window._pendingScrollSection);
+                if (target) {
+                    setTimeout(function() {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+                window._pendingScrollSection = null;
+            }
         }
 
         // Navigate đến trang chi tiết sản phẩm
@@ -2193,7 +2282,21 @@
             // Trang sản phẩm dùng HTML tĩnh - không cần fetch
             // Render danh sách sản phẩm
             if (pageId === 'products') {
+                // Scroll tới section tĩnh ngay (luôn có trong DOM)
+                if (window._pendingScrollSection) {
+                    const sec = window._pendingScrollSection;
+                    window._pendingScrollSection = null;
+                    setTimeout(function() {
+                        const el = document.getElementById(sec);
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 150);
+                }
                 renderProductsPage();
+            }
+
+            // Inject sidebar vào trang chi tiết sản phẩm
+            if (pageId.startsWith('product-')) {
+                injectProductSidebar(pageId);
             }
 
             // ==========================================
@@ -2289,6 +2392,14 @@
         // NHẬN DIỆN URL LÚC MỚI VÀO WEB
         // ==========================================
         function handleInitialRoute() {
+            // Kiểm tra redirect từ các trang SEO tĩnh
+            const redirectPage = sessionStorage.getItem('redirectPage');
+            if (redirectPage) {
+                sessionStorage.removeItem('redirectPage');
+                navigate(redirectPage, false);
+                return;
+            }
+
             const currentPath = window.location.pathname;
             
             if (currentPath === '/gioi-thieu' || currentPath === '/gioi-thieu/') {
@@ -2423,6 +2534,92 @@
                 activeNavMobile.classList.remove('text-gray-500');
             }
         }
+
+        // ==========================================
+        // DANH MỤC SẢN PHẨM SIDEBAR
+        // ==========================================
+        var PRODUCT_MENU = [
+            // Sản phẩm chủ đạo (có trang riêng)
+            { label: 'Máy Đo Nhiệt Độ Kim Loại Lỏng', pageId: 'product-may-do-nhiet-do-kim-loai-long', catSection: null },
+            { label: 'Cặp Nhiệt Điện (Thermotip, BMD)', pageId: 'product-cap-nhiet-dien', catSection: null },
+            { label: 'Đầm Khí Nén D-Series', pageId: 'product-dam-khi-nen', catSection: null },
+            { label: 'Máy Mài Khí Nén Cầm Tay', pageId: 'product-may-mai-cam-tay', catSection: null },
+            { label: 'Đệm Chống Rung, Giảm Chấn', pageId: 'product-dem-chong-rung', catSection: null },
+            { label: 'Cốc Mẫu Đo Nhiệt (Metacup)', pageId: 'product-coc-mau', catSection: null },
+            { label: 'Máy Cưa Khí Nén Phòng Nổ', pageId: 'product-may-cua-khi-nen', catSection: null },
+            // Sản phẩm chưa có trang riêng -> về trang products và scroll
+            { label: 'Hệ Thống Phân Tích Ferrolab', pageId: null, catSection: 'cat-phan-tich' },
+            { label: 'Hệ Thống Phân Tích Quang Phổ', pageId: null, catSection: 'cat-phan-tich' },
+            { label: 'Thiết Bị Thí Nghiệm Cát Đúc', pageId: null, catSection: 'cat-thi-nghiem' },
+            { label: 'Dao Cắt Riser / Ba Via', pageId: null, catSection: 'cat-phu-tro' },
+            { label: 'Vật Tư Tiêu Hao & Phụ Tùng', pageId: null, catSection: 'cat-vat-tu' },
+            { label: 'Danh Mục Tổng Hợp', pageId: null, catSection: 'cat-generic' },
+        ];
+
+        function buildSidebarInnerHTML(currentPageId) {
+            var items = PRODUCT_MENU.map(function(item) {
+                var isActive = (item.pageId === currentPageId);
+                var hasPage = !!item.pageId;
+                var cls = 'product-sidebar-item' + (isActive ? ' active' : '') + (!hasPage ? ' no-page' : '');
+                var icon = !hasPage ? ' <i class="fa-solid fa-share" style="font-size:8px;opacity:0.4;margin-left:3px;"></i>' : '';
+                return '<a class="' + cls + '" onclick="sidebarNavigate(\'' + (item.pageId||'') + '\',\'' + (item.catSection||'') + '\')">'
+                    + item.label + icon + '</a>';
+            }).join('');
+
+            return '<div class="product-sidebar-title"><i class="fa-solid fa-list"></i> Danh Mục Sản Phẩm</div>'
+                + items
+                + '<div style="padding:16px 20px;border-top:1px solid #27272a;margin-top:8px;">'
+                + '<a onclick="navigate(\'products\')" style="font-size:11px;color:#3b82f6;cursor:pointer;display:flex;align-items:center;gap:6px;">'
+                + '<i class="fa-solid fa-arrow-left" style="font-size:10px;"></i> Tất cả Thiết bị</a>'
+                + '</div>';
+        }
+
+        function sidebarNavigate(pageId, catSection) {
+            if (pageId) {
+                navigate(pageId);
+            } else {
+                // Lưu section cần scroll vào biến toàn cục
+                window._pendingScrollSection = catSection || null;
+                navigate('products');
+            }
+        }
+
+        var STATIC_PRODUCT_PAGES = [
+            'product-may-do-nhiet-do-kim-loai-long',
+            'product-dam-khi-nen',
+            'product-cap-nhiet-dien',
+            'product-coc-mau',
+            'product-may-cua-khi-nen',
+            'product-may-mai-cam-tay',
+            'product-dem-chong-rung'
+        ];
+
+        // Wrap nội dung page vào layout 2 cột (chỉ chạy 1 lần mỗi page)
+        function wrapProductPages() {
+            STATIC_PRODUCT_PAGES.forEach(function(pid) {
+                var page = document.getElementById('page-' + pid);
+                if (!page || page.dataset.sidebarWrapped) return;
+                page.dataset.sidebarWrapped = '1';
+                var originalHTML = page.innerHTML;
+                page.innerHTML = '<div class="product-page-layout">'
+                    + '<div class="product-sidebar" id="sidebar-' + pid + '"></div>'
+                    + '<div class="product-content-area">' + originalHTML + '</div>'
+                    + '</div>';
+            });
+        }
+
+        function injectProductSidebar(currentPageId) {
+            wrapProductPages();
+            // Cập nhật active item trên tất cả các sidebar
+            STATIC_PRODUCT_PAGES.forEach(function(pid) {
+                var sb = document.getElementById('sidebar-' + pid);
+                if (sb) sb.innerHTML = buildSidebarInnerHTML(currentPageId);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            wrapProductPages();
+        });
     </script>
 </body>
 </html>
